@@ -1,0 +1,20 @@
+.ellipsisLn(@line){
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: @line;
+}
+
+.expandClickArea(@extent: 10px) {
+  position: relative;
+
+  &::after {
+      content: '';
+      position: absolute;
+      top: -@extent;
+      bottom: -@extent;
+      left: -@extent;
+      right: -@extent;
+  }
+}

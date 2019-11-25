@@ -1,5 +1,9 @@
 module.exports = {
   plugins: {
-    autoprefixer: {}
+    autoprefixer: {},
+    // 配置svg
+    "postcss-write-svg": {
+      uft8: false
+    }
   }
 }

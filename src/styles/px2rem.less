@@ -1,0 +1,12 @@
+// base on 750's physical pixel
+.px2vw(@attributes,@px){
+  @{attributes}: @px / 750 * 100vw;
+}
+// for backgroud-size or background-position ...
+.px2vw(@attributes,@px1,@px2){
+  @{attributes}: @px1 / 750 * 100vw @px2 / 750 * 100vw;
+}
+// for padding or margin
+.px2vw(@attributes,@px1,@px2,@px3,@px4){
+  @{attributes}: @px1 / 750 * 100vw @px2 / 750 * 100vw @px3 / 750 * 100vw @px4 / 750 * 100vw;
+}

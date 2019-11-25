@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    heome
   </div>
 </template>
 
