@@ -1,6 +1,6 @@
 <template>
-  <div class="home">
-    heome
+  <div class="login">
+    home
   </div>
 </template>
 
@@ -13,3 +13,11 @@ export default {
   }
 }
 </script>
+
+<style lang="less">
+  .login {
+    width: 100%;
+    height: 100vh;
+    background: @pink;
+  }
+</style>

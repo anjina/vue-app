@@ -11,12 +11,4 @@ module.exports = {
       .set('components', resolve('src/components'))
       .set('assets', resolve('src/assets'))
   },
-  css: {
-    loaderOptions: {
-      // 给sass-loader 传递选项
-      less: {
-        prependData: `@import "@/styles/index.less";`
-      }
-    }
-  }
 }
