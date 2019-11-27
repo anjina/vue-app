@@ -15,11 +15,11 @@
             <span class="name">Dialy Pay</span>
           </div>
           <div class="login_auth">
-            <van-tabs v-model="activeTab">
+            <van-tabs v-model="activeTab" animated>
               <van-tab title="登录">
                 <van-cell-group>
                   <van-field
-                    v-model="phoneNum"
+                    v-model="loginPhoneNum"
                     required
                     clearable
                     label="手机号"
@@ -33,6 +33,7 @@
                     label="短信验证码"
                     placeholder="验证码"
                     required
+                    @click.stop="changeImage(1)"
                     v-if="loginWay === 0"
                   >
                     <van-button slot="button" v-if="!countDown" size="small" type="primary" @click.stop="getCode">发送验证码</van-button>
@@ -40,12 +41,11 @@
                       slot="button"
                       size="small"
                       type="primary"
-                      disabled=""
-                      v-model="smsCaptcha"
+                      disabled
                       v-else>已发送{{countDown}}s</van-button>
                   </van-field>
                   <van-field
-                    v-model="code"
+                    v-model="loginPassword"
                     type="password"
                     label="密码"
                     placeholder="请输入密码"
@@ -69,7 +69,7 @@
                       slot="button">
                   </van-field>
                 </van-cell-group>
-                <van-button type="info" class="login_btn">登录</van-button>
+                <van-button type="info" class="login_btn" @click.stop="onLogin">登录</van-button>
                 <div class="login_way" @click="toggleLoginWay">{{loginWay === 0 ? '账号密码登录' : '短信验证码登录'}}</div>
               </van-tab>
               <van-tab title="注册">
@@ -80,17 +80,19 @@
                     clearable
                     label="手机号"
                     placeholder="请输入手机号"
+                    @click.stop="changeImage(0)"
                   />
 
                   <van-field
-                    v-model="code"
+                    v-model="password"
                     type="password"
                     label="密码"
                     placeholder="不少于6位密码"
+                    @click.stop="changeImage(1)"
                     required
                   />
                 </van-cell-group>
-                <van-button type="info" class="login_btn">注册</van-button>
+                <van-button type="info" class="login_btn" @click.stop="onRegister">注册</van-button>
               </van-tab>
             </van-tabs>
           </div>
@@ -101,26 +103,29 @@
 </template>
 
 <script>
-import { Dialog } from 'vant'
+import { Dialog, Toast } from 'vant'
+import { apiUrl } from '@/service/api'
 // @ is an alias to /src
 export default {
   name: 'login',
-  components: {
-  },
   data() {
     return {
       coverImg: require('../assets/back.jpg'),
       topImg: require('../assets/A.png'),
       showCover: false,
       activeTab: 0,
-      phoneNum: '',
-      code: '',
+      phoneNum: '', // 注册手机号
+      code: '', // 输入的验证码
       loginWay: 0, // 代表验证码登录
       imgCaptcha: '', // 图片验证码
-      numCode: '', // 手机验证码
+      numCode: '', // 收到的手机验证码
       countDown: 0,
+      password: '', // 注册password
+      loginPassword: '', // 登录密码
+      loginPhoneNum: '' // 登录账号
     }
   },
+
   mounted() {
     this.showCover = true
     setTimeout(() => {
@@ -145,12 +150,13 @@ export default {
           clearInterval(this.timer)
         }
       }, 1000);
-      this.numCode = 123456
+      this.numCode = '123456'
       Dialog.alert({
         title: '温馨提示',
         message: `验证码获取成功，请输入${this.numCode}`
       })
     },
+    // 切换头图
     changeImage(index) {
       if(index === 0) {
         this.topImg = require('../assets/C.png')
@@ -158,6 +164,84 @@ export default {
         this.topImg = require('../assets/B.png')
       } else {
         this.topImg = require('../assets/A.png')
+      }
+    },
+    validatePhoneNum(phoneNum) {
+      if(phoneNum.length < 1) {
+        return '手机号不能为空';
+      }
+      if(!/^1[345678][0-9]{9}$/.test(phoneNum)) {
+        return '无效手机号';
+      }
+      return false;
+    },
+    validatePassword(password) {
+      if(password.length < 1) {
+        return '密码不能为空';
+      }
+      if(password.length < 6) {
+        return '密码不能小于6位';
+      }
+      return false;
+    },
+    onRegister() {
+      const { phoneNum, password } = this
+      const message = this.validatePhoneNum(phoneNum)
+      if(message) {
+        this.$toast.fail(message);
+        return;
+      }
+      const message1 = this.validatePassword(password)
+      if(message1) {
+        this.$toast.fail(message1);
+        return;
+      }
+      this.$post(apiUrl.register, {
+        phoneNum,
+        password
+      }).then(res => {
+        if(res.status === 201) {
+          this.$toast.fail('手机号已注册');
+          return;
+        }
+        if(res.status === 200) {
+          const { token } = res.data.data
+          sessionStorage.setItem('token', token);
+          this.$store.commit('user/setProps', {
+            props: {
+              phoneNum,
+              password,
+            }
+          })
+          Toast({
+            type: 'success',
+            duration: 500,
+            message: '注册成功！',
+            onClose: () => {
+              this.$router.push('/home');
+            }
+          });
+        }
+      })
+    },
+    onLogin() {
+      // 验证码登录
+      if(this.loginWay === 0) {
+        const msg = this.validatePhoneNum(this.loginPhoneNum)
+        if(msg) {
+          this.$toast.fail(msg);
+          return;
+        }
+        if(!this.code) {
+          this.$toast.fail('请输入验证码');
+          return;
+        }
+        if(this.code && this.numCode !== this.code) {
+          this.$toast.fail('验证码错误');
+          return;
+        }
+      } else {
+        // 密码登录
       }
     }
   }
