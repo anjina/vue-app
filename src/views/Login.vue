@@ -105,6 +105,7 @@
 <script>
 import { Dialog, Toast } from 'vant'
 import { apiUrl } from '@/service/api'
+import { initSocket } from '@/service/socket'
 // @ is an alias to /src
 export default {
   name: 'login',
@@ -122,7 +123,7 @@ export default {
       countDown: 0,
       password: '', // 注册password
       loginPassword: '', // 登录密码
-      loginPhoneNum: '' // 登录账号
+      loginPhoneNum: '13510099014' // 登录账号
     }
   },
 
@@ -160,6 +161,7 @@ export default {
         res => {
           const { code } = res.data.data
           this.numCode = code
+          this.code = code // 临时
           Dialog.alert({
             title: '温馨提示',
             message: `验证码获取成功，请输入${this.numCode}`
@@ -224,6 +226,7 @@ export default {
               password,
             }
           })
+          initSocket(phoneNum);
           this.showToast('注册成功！');
         }
       })
@@ -247,12 +250,13 @@ export default {
         }
         this.$post(apiUrl.login, { phoneNum: loginPhoneNum, byCode: true })
           .then(res => {
-            const { token, phoneNum } = res.data.data;
+            const { token } = res.data.data;
             sessionStorage.setItem('token', token);
             this.$store.commit('user/setProp', {
               prop: 'phoneNum',
-              value: phoneNum
+              value: loginPhoneNum
             });
+            initSocket(loginPhoneNum);
             this.showToast('登录成功！');
           })
       } else {
@@ -296,6 +300,7 @@ export default {
               password,
             }
           });
+          initSocket(phoneNum);
           this.showToast('登录成功！');
         })
       }
@@ -310,6 +315,7 @@ export default {
         }
       });
     },
+
   }
 }
 </script>
