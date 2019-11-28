@@ -1,5 +1,6 @@
 const apiUrl = {
-  register: '/register'
+  register: '/register',
+  login: '/login',
 }
 
 module.exports = {

@@ -5,6 +5,9 @@ function resolve(dir) {
 }
 
 module.exports = {
+  devServer: {
+    host: '127.0.0.1',
+  },
   chainWebpack: config => {
     config.resolve.alias
       .set('@', resolve('src'))

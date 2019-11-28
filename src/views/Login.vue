@@ -8,7 +8,7 @@
     <div class="login_container">
       <div class="login_wrapper">
         <div class="login_box" @click="changeImage(2)">
-          <img :src="topImg">
+          <img :src="topImg" class="top-img">
           <div class="login_title">
             <span class="welcome">Welcome To ~ </span>
             <van-icon name="after-sale" color="red" size="35" info="99+" />
@@ -19,7 +19,7 @@
               <van-tab title="登录">
                 <van-cell-group>
                   <van-field
-                    v-model="loginPhoneNum"
+                    v-model.trim="loginPhoneNum"
                     required
                     clearable
                     label="手机号"
@@ -28,8 +28,7 @@
                   />
 
                   <van-field
-                    v-model="code"
-                    type="password"
+                    v-model.trim="code"
                     label="短信验证码"
                     placeholder="验证码"
                     required
@@ -54,20 +53,21 @@
                     v-if="loginWay === 1"
                   >
                   </van-field>
-                  <van-field v-model="imgCaptcha"
+                  <van-field v-model.trim="imgCaptcha"
                     center
                     clearable
                     maxlength="4"
                     v-if="loginWay === 1"
                     placeholder="请输入验证码">
-                    <img
-                      src="http://demo.itlike.com/web/xlmc/api/captcha"
-                      alt="captcha"
-                      @click.prevent="getCaptcha"
-                      ref="imgCaptcha"
-                      class="login_captcha"
-                      slot="button">
                   </van-field>
+                  <img
+                    src="http://127.0.0.1:8360/captcha"
+                    alt="captcha"
+                    @click.prevent="getCaptcha"
+                    ref="imgCaptcha"
+                    class="login_captcha"
+                    v-if="loginWay === 1"
+                  />
                 </van-cell-group>
                 <van-button type="info" class="login_btn" @click.stop="onLogin">登录</van-button>
                 <div class="login_way" @click="toggleLoginWay">{{loginWay === 0 ? '账号密码登录' : '短信验证码登录'}}</div>
@@ -75,7 +75,7 @@
               <van-tab title="注册">
                 <van-cell-group>
                   <van-field
-                    v-model="phoneNum"
+                    v-model.trim="phoneNum"
                     required
                     clearable
                     label="手机号"
@@ -116,8 +116,8 @@ export default {
       activeTab: 0,
       phoneNum: '', // 注册手机号
       code: '', // 输入的验证码
+      imgCaptcha: '', // 输入的图片验证码
       loginWay: 0, // 代表验证码登录
-      imgCaptcha: '', // 图片验证码
       numCode: '', // 收到的手机验证码
       countDown: 0,
       password: '', // 注册password
@@ -134,15 +134,21 @@ export default {
   },
   methods: {
     toggleLoginWay() {
-      this.loginWay = this.loginWay ? 0 : 1
+      this.loginWay = this.loginWay ? 0 : 1;
     },
     // 获取图片验证码
     getCaptcha() {
       const captchaEle = this.$refs.imgCaptcha;
-      this.$set(captchaEle, 'src', 'http://demo.itlike.com/web/xlmc/api/captcha?time=' + new Date())
+      this.$set(captchaEle, 'src', 'http://127.0.0.1:8360/captcha?time=' + new Date());
     },
     // 获取数字验证码
     getCode() {
+      const { loginPhoneNum } = this
+      const message = this.validatePhoneNum(loginPhoneNum)
+      if(message) {
+        this.$toast(message);
+        return;
+      }
       this.countDown = 60
       this.timer = setInterval(() => {
         this.countDown --;
@@ -150,11 +156,16 @@ export default {
           clearInterval(this.timer)
         }
       }, 1000);
-      this.numCode = '123456'
-      Dialog.alert({
-        title: '温馨提示',
-        message: `验证码获取成功，请输入${this.numCode}`
-      })
+      this.$get(apiUrl.login, { phoneNum: loginPhoneNum }).then(
+        res => {
+          const { code } = res.data.data
+          this.numCode = code
+          Dialog.alert({
+            title: '温馨提示',
+            message: `验证码获取成功，请输入${this.numCode}`
+          })
+        }
+      )
     },
     // 切换头图
     changeImage(index) {
@@ -168,10 +179,10 @@ export default {
     },
     validatePhoneNum(phoneNum) {
       if(phoneNum.length < 1) {
-        return '手机号不能为空';
+        return '请先填写手机号';
       }
       if(!/^1[345678][0-9]{9}$/.test(phoneNum)) {
-        return '无效手机号';
+        return '请输入有效的手机号';
       }
       return false;
     },
@@ -188,12 +199,12 @@ export default {
       const { phoneNum, password } = this
       const message = this.validatePhoneNum(phoneNum)
       if(message) {
-        this.$toast.fail(message);
+        this.$toast(message);
         return;
       }
       const message1 = this.validatePassword(password)
       if(message1) {
-        this.$toast.fail(message1);
+        this.$toast(message1);
         return;
       }
       this.$post(apiUrl.register, {
@@ -213,37 +224,92 @@ export default {
               password,
             }
           })
-          Toast({
-            type: 'success',
-            duration: 500,
-            message: '注册成功！',
-            onClose: () => {
-              this.$router.push('/home');
-            }
-          });
+          this.showToast('注册成功！');
         }
       })
     },
     onLogin() {
+      const { loginPhoneNum } = this;
+      const msg = this.validatePhoneNum(loginPhoneNum);
+      if(msg) {
+        this.$toast(msg);
+        return;
+      }
       // 验证码登录
       if(this.loginWay === 0) {
-        const msg = this.validatePhoneNum(this.loginPhoneNum)
-        if(msg) {
-          this.$toast.fail(msg);
-          return;
-        }
         if(!this.code) {
-          this.$toast.fail('请输入验证码');
+          this.$toast('请输入验证码');
           return;
         }
         if(this.code && this.numCode !== this.code) {
           this.$toast.fail('验证码错误');
           return;
         }
+        this.$post(apiUrl.login, { phoneNum: loginPhoneNum, byCode: true })
+          .then(res => {
+            const { token, phoneNum } = res.data.data;
+            sessionStorage.setItem('token', token);
+            this.$store.commit('user/setProp', {
+              prop: 'phoneNum',
+              value: phoneNum
+            });
+            this.showToast('登录成功！');
+          })
       } else {
         // 密码登录
+        const { loginPassword, imgCaptcha } = this;
+        const message = this.validatePassword(loginPassword);
+        if(message) {
+          this.$toast(message);
+          return;
+        }
+        if(!imgCaptcha) {
+          this.$toast('请输入验证码');
+          return;
+        }
+        this.$post(apiUrl.login, 
+          {
+            phoneNum: loginPhoneNum,
+            password: loginPassword,
+            imgCaptcha
+          }
+        ).then(res => {
+          if(res.data.errno === 1000) {
+            this.$toast.fail(res.data.errmsg);
+            return;
+          }
+          const {
+            avatar,
+            nickName,
+            phoneNum,
+            sign,
+            password,
+            token,
+          } = res.data.data;
+          sessionStorage.setItem('token', token);
+          this.$store.commit('user/setProps', {
+            props: {
+              avatar,
+              nickName,
+              phoneNum,
+              sign,
+              password,
+            }
+          });
+          this.showToast('登录成功！');
+        })
       }
-    }
+    },
+    showToast(message) {
+      Toast({
+        type: 'success',
+        duration: 500,
+        message,
+        onClose: () => {
+          this.$router.push('/home');
+        }
+      });
+    },
   }
 }
 </script>
@@ -304,7 +370,7 @@ export default {
         width: 100%;
         height: 100%;
 
-        img {
+        .top-img {
           position: absolute;
           left: 50%;
           .px2vw(top, 0);
@@ -337,13 +403,11 @@ export default {
 
           .login_captcha {
             position: absolute;
+            bottom: 0;
             right: 0;
-            left: 50%;
-            top: 30%;
-            transform: translate(-50%, -50%);
-            .px2vw(width, 280);
+            .px2vw(width, 200);
             .px2vw(height, 100);
-            .px2vw(margin-left, 150);
+            .px2vw(line-height, 100);
           }
         }
       }

@@ -31,7 +31,6 @@ const mutations = {
     for(const [key, value] of Object.entries(props)) {
       state[key] = value
     }
-    console.log(state.token)
   },
 
   getProp (state, {

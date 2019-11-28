@@ -96,13 +96,14 @@ instance.interceptors.response.use(
   error => {
     hideLoading({ withLoading: true });
     const { response } = error;
-    console.log(response);
     if(response) {
       // 请求已发出，但是不在2xx的范围
-      errorHandle(response.code, response.data.message);
+      errorHandle(response.status, response.data.message);
       return Promise.reject(response);
     } else {
       // 可能断网
+      Toast.fail('请检查您的网络稍后重试！');
+      return Promise.reject();
     }
   }
 )
