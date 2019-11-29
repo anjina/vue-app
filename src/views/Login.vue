@@ -250,11 +250,24 @@ export default {
         }
         this.$post(apiUrl.login, { phoneNum: loginPhoneNum, byCode: true })
           .then(res => {
-            const { token } = res.data.data;
+            const {
+              avatar = '',
+              nickName = '',
+              sign = '',
+              password = '',
+              token,
+              lover = '',
+            } = res.data.data;
             sessionStorage.setItem('token', token);
-            this.$store.commit('user/setProp', {
-              prop: 'phoneNum',
-              value: loginPhoneNum
+            this.$store.commit('user/setProps', {
+              props: {
+                avatar,
+                nickName,
+                phoneNum: loginPhoneNum,
+                sign,
+                password,
+                lover
+              }
             });
             initSocket(loginPhoneNum);
             this.showToast('登录成功！');
@@ -289,6 +302,7 @@ export default {
             sign,
             password,
             token,
+            lover,
           } = res.data.data;
           sessionStorage.setItem('token', token);
           this.$store.commit('user/setProps', {
@@ -298,6 +312,7 @@ export default {
               phoneNum,
               sign,
               password,
+              lover
             }
           });
           initSocket(phoneNum);
@@ -306,16 +321,16 @@ export default {
       }
     },
     showToast(message) {
+      const { redirect } = this.$route.query
       Toast({
         type: 'success',
         duration: 500,
         message,
         onClose: () => {
-          this.$router.push('/home');
+          this.$router.push(redirect ? redirect : '/home');
         }
       });
     },
-
   }
 }
 </script>

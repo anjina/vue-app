@@ -1,12 +1,10 @@
 import axios from 'axios';
 import { Toast } from 'vant';
 import router from '../router/index'
+import store from '../store/index'
 
 const instance = axios.create({
   baseURL: process.env.NODE_ENV === 'production' ? '' : 'http://127.0.0.1:8360',   //根据自己配置的反向代理去设置不同环境的baeUrl
-  headers: {
-    token: sessionStorage.getItem('token') || ''
-  },
   timeout: 10000,
 })
 
@@ -25,7 +23,7 @@ const tip = msg => {
 // 跳转登录
 const toLogin = () => {
   router.replace({
-    path: '/login',
+    path: '/',
     query: {
       redirect: router.currentRoute
     }
@@ -38,11 +36,14 @@ const errorHandle = (status, other) => {
   switch (status) {
     // 401未登录
     case 401:
-      toLogin();
+      tip('请先登录~');
+      setTimeout(() => {
+        toLogin();
+      }, 1000);
       break;
     // 403 token过期
     case 403:
-      tip('登录过期，请重新登录');
+      tip('登录过期，请重新登录~');
       sessionStorage.removeItem('token');
       // 处理store
       setTimeout(() => {
@@ -70,6 +71,13 @@ function hideLoading(request) {
 
 instance.interceptors.request.use(
   config => {
+    // 在请求里取store，防止取不到
+    const uid = store.getters['user/phoneNum'];
+    config.headers = {
+      ...config.headers,
+      uid: uid || '',
+      token: sessionStorage.getItem('token') || '',
+    }
     const { withLoading = true } = config
     if(withLoading) {
       count ++;

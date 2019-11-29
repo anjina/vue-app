@@ -1,9 +1,10 @@
 const state = {
-  phoneNum: '',
-  avatar: '',
-  nickName: '',
-  sign: '',
-  password: '',
+  phoneNum: null,
+  avatar: null,
+  nickName: null,
+  sign: null,
+  password: null,
+  lover: null,
   token: sessionStorage.getItem('token')
 }
 
@@ -14,6 +15,7 @@ const getters = {
   nickName: state => state.nickName,
   password: state => state.password,
   token: state => state.token,
+  lover: state => state.lover,
 }
 
 const actions = {
