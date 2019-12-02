@@ -1,11 +1,6 @@
 <template>
   <div class="search">
-    <van-nav-bar
-      title="约TA🙋‍♀️"
-      left-text="Back" 
-      left-arrow
-      @click-left="onBack"
-    ></van-nav-bar>
+    <nav-bar title="约TA🙋‍♀️"></nav-bar>
     <van-search
       v-model="listQuery.query.keyword"
       placeholder="请输入心仪的TA😍"
@@ -33,6 +28,7 @@
 
 <script>
 import { apiUrl } from '@/service/api'
+import NavBar from '@/components/NavBar'
 export default {
   data() {
     return {
@@ -46,6 +42,9 @@ export default {
         }
       }
     }
+  },
+  components: {
+    NavBar
   },
   mounted() {
     this.fetchData();

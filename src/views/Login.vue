@@ -159,7 +159,7 @@ export default {
       }, 1000);
       this.$get(apiUrl.login, { phoneNum: loginPhoneNum }).then(
         res => {
-          const { code } = res.data.data
+          const { code } = res.data
           this.numCode = code
           this.code = code // 临时
           Dialog.alert({
@@ -172,9 +172,9 @@ export default {
     // 切换头图
     changeImage(index) {
       if(index === 0) {
-        this.topImg = require('../assets/C.png')
-      } else if (index === 1) {
         this.topImg = require('../assets/B.png')
+      } else if (index === 1) {
+        this.topImg = require('../assets/C.png')
       } else {
         this.topImg = require('../assets/A.png')
       }
@@ -213,12 +213,12 @@ export default {
         phoneNum,
         password
       }).then(res => {
-        if(res.status === 201) {
+        if(res.errno === 201) {
           this.$toast.fail('手机号已注册');
           return;
         }
-        if(res.status === 200) {
-          const { token } = res.data.data
+        if(res.status === 0) {
+          const { token } = res.data
           sessionStorage.setItem('token', token);
           this.$store.commit('user/setProps', {
             props: {
@@ -257,7 +257,7 @@ export default {
               password = '',
               token,
               lover = '',
-            } = res.data.data;
+            } = res.data;
             sessionStorage.setItem('token', token);
             this.$store.commit('user/setProps', {
               props: {
@@ -303,7 +303,7 @@ export default {
             password,
             token,
             lover,
-          } = res.data.data;
+          } = res.data;
           sessionStorage.setItem('token', token);
           this.$store.commit('user/setProps', {
             props: {
