@@ -121,7 +121,7 @@ export default {
     return new Promise((resolve, reject) => {
       instance.post(url, data, config)
         .then(res => {
-          resolve(res);
+          resolve(res.data);
         })
         .catch(err => {
           reject(err);
@@ -134,7 +134,7 @@ export default {
       instance.get(url, {
         params: data
       }, config).then(res => {
-        resolve(res);
+        resolve(res.data);
       }).catch(err => {
         reject(err);
       })
@@ -145,7 +145,7 @@ export default {
     return new Promise((resolve, reject) => {
       instance.delete(url, { data }, config)
         .then(res => {
-          resolve(res);
+          resolve(res.data);
         })
         .catch(err => {
           reject(err);
