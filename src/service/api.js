@@ -1,7 +1,7 @@
 const apiUrl = {
   register: '/register',
   login: '/login',
-  getLovers: '/lover',
+  getLovers: '/lovers',
 }
 
 module.exports = {

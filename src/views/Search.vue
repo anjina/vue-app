@@ -7,8 +7,8 @@
       @click-left="onBack"
     ></van-nav-bar>
     <van-search
-      v-model="value"
-      placeholder="请输入心仪的TA🤭"
+      v-model="listQuery.query.keyword"
+      placeholder="请输入心仪的TA😍"
       show-action
       shape="round"
       background="pink"
@@ -41,7 +41,9 @@ export default {
       recommendList: [],
       searchList: [],
       listQuery: {
-        value: null
+        query: {
+          keyword: null
+        }
       }
     }
   },
