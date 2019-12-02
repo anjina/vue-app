@@ -1,5 +1,5 @@
 import openSocket from 'socket.io-client';
-import Vue from 'vue'
+
 class Socket {
   constructor(url, data) {
     this.socket = openSocket(url, {
@@ -28,7 +28,7 @@ class Socket {
   }
 
   handleClose() {
-    this.socket.disconnect();
+    this.socket.close();
   }
 
   startTalk(data) {
@@ -37,7 +37,5 @@ class Socket {
 }
 
 export function initSocket(id) {
-  const socket = new Socket('http://127.0.0.1:8360', id);
-  // 挂载到全局对象
-  Vue.prototype.$socket = socket;
+  window.mySocket = new Socket('http://127.0.0.1:8360', id);
 }

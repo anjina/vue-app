@@ -172,9 +172,9 @@ export default {
     // 切换头图
     changeImage(index) {
       if(index === 0) {
-        this.topImg = require('../assets/C.png')
-      } else if (index === 1) {
         this.topImg = require('../assets/B.png')
+      } else if (index === 1) {
+        this.topImg = require('../assets/C.png')
       } else {
         this.topImg = require('../assets/A.png')
       }
