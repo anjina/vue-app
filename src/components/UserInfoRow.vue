@@ -26,7 +26,9 @@ export default {
     }
   },
   methods: {
-    onEdit() {},
+    onEdit() {
+      this.$emit('edit');
+    },
   },
 }
 </script>
@@ -39,14 +41,22 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    .px2vw(padding, 20, 20);
+    .px2vw(padding, 30, 30);
 
     .left-content {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      .px2vw(margin-right, 30);
+      .px2vw(margin-right, 40);
+
+      .content {
+        .ellipsisLn(1);
+      }
+    }
+
+    .right-content {
+      .expandClickArea(15);
     }
   }
 </style>

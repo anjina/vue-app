@@ -8,18 +8,19 @@
           <img :src="avatarD" v-else>
         </div>
       </info-row>
-      <info-row prop="昵称" :value="nickName"></info-row>
-      <info-row prop="签名" :value="sign"></info-row>
-      <info-row prop="💕💕💕" :value="phoneNum"></info-row>
-      <info-row prop="手机号" :value="phoneNum"></info-row>
-      <info-row prop="密码" value="******"></info-row>
+      <info-row prop="昵称" :value="nickName" @edit="onEdit(0)"></info-row>
+      <info-row prop="签名" :value="sign" @edit="onEdit(1)"></info-row>
+      <info-row prop="💕💕💕" :value="phoneNum" @edit="onEdit(2)"></info-row>
+      <info-row prop="手机号" :value="phoneNum" @edit="onEdit(3)"></info-row>
+      <info-row prop="密码" value="******" @edit="onEdit(4)"></info-row>
     </div>
-    <div class="footer" @click.stop="onSignOut">Sign Out</div>
+    <bottom-btn content="Sign Out" @confirm="onSignOut"></bottom-btn>
   </div>
 </template>
 
 <script>
 import NavBar from '@/components/NavBar'
+import BottomBtn from '@/components/BottomBtn'
 import InfoRow from '@/components/UserInfoRow'
 import { mapGetters } from 'vuex'
 import { Toast } from 'vant'
@@ -27,6 +28,7 @@ export default {
   components: {
     NavBar,
     InfoRow,
+    BottomBtn
   },
   computed: {
     ...mapGetters({
@@ -44,6 +46,21 @@ export default {
     }
   },
   methods: {
+    onEdit(type) {
+      if(type === 2 || type === 3) {
+        this.$toast('暂不支持修改哦~');
+        return;
+      }
+      this.goEdit(type);
+    },
+    goEdit(type) {
+      this.$router.push({
+        path: '/edit',
+        query: {
+          type
+        },
+      });
+    },
     onSignOut() {
       if(sessionStorage.getItem('token')) {
         sessionStorage.removeItem('token');
@@ -82,19 +99,6 @@ export default {
           border-radius: 50%;
         }
       }
-    }
-    .footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      z-index: 1;
-      box-sizing: border-box;
-      width: 100%;
-      .px2vw(height, 100);
-      .px2vw(line-height, 100);
-      text-align: center;
-      color: #fff;
-      background: rgb(105, 105, 105);
     }
   }
 </style>

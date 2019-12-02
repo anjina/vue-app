@@ -11,6 +11,7 @@ Vue.use(Vant);
 Vue.prototype.$post = http.post
 Vue.prototype.$get = http.get
 Vue.prototype.$delete = http.delete
+Vue.prototype.$put = http.put
 
 Vue.config.productionTip = false
 
