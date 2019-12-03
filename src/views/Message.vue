@@ -2,19 +2,35 @@
   <div class="message">
     <nav-bar title="Message" :needAvatar="false"></nav-bar>
     <div class="message_list" v-if="list.length">
-      <div class="message_item" v-for="item in list" :key="item.id">
-        <img :src="item.fromInfo.avatar || avatarD" alt="">
-        <div class="right-content">
-          <div class="name">{{item.fromInfo.nickName}}</div>
-          <div class="content" v-if="item.type === 0">{{item.message}}</div>
-          <div class="content" v-if="item.type === 1">{{item.fromInfo.nickName}}想和你..</div>
-          <div class="time">{{item.createTime}}</div>
+      <template v-for="(item, index) in list">
+        <div class="message_item" @click.stop="onMegDetail(index)" :key="item.id">
+          <img :src="item.fromInfo.avatar || avatarD" alt="">
+          <div class="van-hairline--bottom right-content">
+            <div class="name">{{item.fromInfo.nickName}}</div>
+            <div class="content" v-if="item.type === 0">{{item.message}}</div>
+            <div class="content" v-if="item.type === 1">{{item.fromInfo.nickName}}想和你...</div>
+            <div class="time">{{item.createTime | parseTime}}</div>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
     <div class="no-data" v-else>
       <van-divider :style="{ color: 'rgb(105, 105, 105)'}">暂无数据..</van-divider>
     </div>
+    <van-dialog
+      v-model="showDetail"
+      title="消息卡片"
+      show-cancel-button
+      :show-confirm-button="currentDetail.type === 1"
+      confirm-button-text="我愿意😘"
+      cancel-button-text="关闭"
+      cancel-button-color="rgb(190, 190, 190)"
+    >
+      <p v-if="currentDetail.type === 1" class="dialog-content">
+        {{currentDetail.fromInfo.nickName}}想和你成为情侣关系，是否愿意？
+      </p>
+      <p v-else class="dialog-content">{{currentDetail.message}}</p>
+    </van-dialog>
   </div>
 </template>
 
@@ -27,6 +43,8 @@ export default {
       phoneNum: null,
       list: [],
       avatarD: require('../assets/avatar.png'),
+      showDetail: false,
+      currentDetail: {}
     }
   },
   components: {
@@ -42,6 +60,10 @@ export default {
       const { phoneNum } = this;
       const res = await this.$get(apiUrl.getMessage, { phoneNum });
       this.list = res.data;
+    },
+    onMegDetail(index) {
+      this.currentDetail = this.list[index];
+      this.showDetail = true;
     }
   },
 }
@@ -60,8 +82,8 @@ export default {
         .px2vw(padding, 40, 20);
 
         img {
-          .px2vw(width, 100);
-          .px2vw(height, 100);
+          .px2vw(width, 90);
+          .px2vw(height, 90);
           .px2vw(margin-right, 20);
           border-radius: 50%;
           overflow: hidden;
@@ -72,21 +94,34 @@ export default {
           flex: 1;
           display: flex;
           flex-direction: column;
-          .px2vw(height, 100);
+          .px2vw(height, 105);
           justify-content: space-between;
           .px2vw(padding-bottom, 15);
+          box-sizing: border-box;
+
+          .content {
+            color: @grey;
+            .px2vw(font-size, 28);
+            .ellipsisLn(1);
+          }
 
           .time {
             position: absolute;
             right: 0;
             top: 0;
             z-index: 1;
+            color: @grey;
+            .px2vw(font-size, 24);
           }
         }
       }
     }
     .no-data {
       .px2vw(padding, 40, 0);
+    }
+    .dialog-content {
+      .px2vw(padding, 0, 30);
+      text-indent: 2em;
     }
   }
 </style>
