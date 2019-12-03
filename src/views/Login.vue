@@ -257,6 +257,8 @@ export default {
               password = '',
               token,
               lover = '',
+              storeId,
+              hasNewMsg,
             } = res.data;
             sessionStorage.setItem('token', token);
             this.$store.commit('user/setProps', {
@@ -266,7 +268,9 @@ export default {
                 phoneNum: loginPhoneNum,
                 sign,
                 password,
-                lover
+                lover,
+                storeId,
+                hasNewMsg,
               }
             });
             initSocket(loginPhoneNum);
@@ -303,6 +307,8 @@ export default {
             password,
             token,
             lover,
+            storeId,
+            hasNewMsg,
           } = res.data;
           sessionStorage.setItem('token', token);
           this.$store.commit('user/setProps', {
@@ -312,7 +318,9 @@ export default {
               phoneNum,
               sign,
               password,
-              lover
+              lover,
+              storeId,
+              hasNewMsg,
             }
           });
           initSocket(phoneNum);

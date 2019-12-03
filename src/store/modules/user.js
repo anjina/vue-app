@@ -6,6 +6,8 @@ const state = {
   password: null,
   lover: null,
   token: sessionStorage.getItem('token'),
+  hasNewMsg: 0,
+  storeId: null,
 }
 
 const getters = {
@@ -16,6 +18,8 @@ const getters = {
   password: state => state.password,
   token: state => state.token,
   lover: state => state.lover,
+  hasNewMsg: state => state.hasNewMsg,
+  storeId: state => state.storeId,
 }
 
 const actions = {

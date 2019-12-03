@@ -36,6 +36,16 @@ const routes = [
     path: '/edit',
     name: 'edit',
     component: () => import(/* webpackChunkName: "user" */ '../views/EditUserInfo.vue')
+  },
+  {
+    path: '/message',
+    name: 'message',
+    component: () => import(/* webpackChunkName: "user" */ '../views/Message.vue')
+  },
+  {
+    path: '/label',
+    name: 'label',
+    component: () => import(/* webpackChunkName: "user" */ '../views/Label.vue')
   }
 ]
 

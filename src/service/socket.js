@@ -25,9 +25,9 @@ class Socket {
     })
     this.socket.on('newMsg', () => {
       // 收到新消息
-      store.commit('notify/setProp', {
+      store.commit('user/setProp', {
         prop: 'hasNewMsg',
-        value: true
+        value: 1
       });
       Notify({
         message: '有新消息喔',

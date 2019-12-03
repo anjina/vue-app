@@ -29,8 +29,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('user', ['avatar']),
-    ...mapGetters('notify', ['hasNewMsg']),
+    ...mapGetters('user', ['avatar', 'hasNewMsg']),
   },
   data() {
     return {

@@ -3,6 +3,7 @@ const apiUrl = {
   login: '/login',
   getLovers: '/user',
   updateUser: '/user',
+  getMessage: '/message',
 }
 
 module.exports = {

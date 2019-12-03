@@ -1,7 +1,7 @@
 <template>
   <div class="user">
     <nav-bar title="Nest" :needAvatar="false"></nav-bar>
-    <div class="user_container">
+    <div class="user_header">
       <div class="user_wrapper">
         <div class="left-content">
           <div class="avatar">
@@ -18,15 +18,22 @@
         </div>
       </div>
     </div>
+    <div class="user_content">
+      <info-row prop="我的消息" :hasNewMsg="hasNewMsg" @edit="onMessage"></info-row>
+      <info-row prop="标签管理" @edit="onLabel"></info-row>
+      <info-row prop="我的支出" @edit="onMyPay"></info-row>
+    </div>
   </div>
 </template>
 
 <script>
 import NavBar from '@/components/NavBar'
+import InfoRow from '@/components/UserInfoRow'
 import { mapGetters } from 'vuex'
 export default {
   components: {
-    NavBar
+    NavBar,
+    InfoRow,
   },
   data() {
     return {
@@ -34,26 +41,40 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('user', ['avatar', 'nickName', 'sign'])
+    ...mapGetters('user', ['avatar', 'nickName', 'sign', 'hasNewMsg', 'phoneNum'])
   },
   methods: {
     onDetail() {
       this.$router.push('/detail');
-    }
+    },
+    onMessage() {
+      const { phoneNum } = this;
+      this.$router.push({
+        path: '/message',
+        query: {
+          id: phoneNum,
+        }
+      })
+    },
+    onLabel() {},
+    onMyPay() {},
   },
 }
 </script>
 
 <style lang="less">
 .user {
-  .user_container {
+  background: #fff;
+  min-height: 100vh;
+  box-sizing: border-box;
+  .user_header {
     .px2vw(padding, 0, 30);
     background: @skyBlue;
     .user_wrapper {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      .px2vw(padding, 10, 0);
+      .px2vw(padding, 40, 0);
 
       .left-content {
         flex: 1;
@@ -91,6 +112,10 @@ export default {
         .expandClickArea(15);
       }
     }
+  }
+
+  .user_content {
+    box-sizing: border-box;
   }
 }
 </style>

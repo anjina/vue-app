@@ -2,7 +2,7 @@
   <div>
     <div class="row">
       <div class="left-content">
-        <div class="prop">{{prop}}</div>
+        <div :class="['prop', hasNewMsg ? 'dot' : '']">{{prop}}</div>
         <div class="content" v-if="value">{{value}}</div>
         <slot name="content"></slot>
       </div>
@@ -23,6 +23,11 @@ export default {
     },
     value: {
       type: String,
+      default: '',
+    },
+    hasNewMsg: {
+      type: Number,
+      default: 0,
     }
   },
   methods: {
@@ -52,6 +57,22 @@ export default {
 
       .content {
         .ellipsisLn(1);
+      }
+
+      .dot {
+        position: relative;
+
+        &::after {
+          position: absolute;
+          .px2vw(top, -5);
+          .px2vw(right, -10);
+          z-index: 99;
+          content: '';
+          .px2vw(width, 20);
+          .px2vw(height, 20);
+          border-radius: 50%;
+          background: @red;
+        }
       }
     }
 
