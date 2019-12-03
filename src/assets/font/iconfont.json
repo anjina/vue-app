@@ -25,6 +25,13 @@
       "font_class": "qinglv",
       "unicode": "e6d7",
       "unicode_decimal": 59095
+    },
+    {
+      "icon_id": "2127117",
+      "name": "返回",
+      "font_class": "back",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
     }
   ]
 }

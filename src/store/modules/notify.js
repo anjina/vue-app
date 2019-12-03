@@ -1,21 +1,11 @@
 const state = {
-  phoneNum: null,
-  avatar: null,
-  nickName: null,
-  sign: null,
-  password: null,
-  lover: null,
-  token: sessionStorage.getItem('token'),
+  hasNewMsg: false,
+  hasShowTip: false
 }
 
 const getters = {
-  phoneNum: state => state.phoneNum,
-  avatar: state => state.avatar,
-  sign: state => state.sign,
-  nickName: state => state.nickName,
-  password: state => state.password,
-  token: state => state.token,
-  lover: state => state.lover,
+  hasShowTip: state => state.hasShowTip,
+  hasNewMsg: state => state.hasNewMsg,
 }
 
 const actions = {

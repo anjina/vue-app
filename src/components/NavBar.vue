@@ -1,7 +1,11 @@
 <template>
   <div class="nav-bar">
-    <van-nav-bar :title="title" @click-left="onBack" @click-right="onMy" :left-arrow="needBack">
-      <div slot="right" class="avatar" v-if="needAvatar">
+    <van-nav-bar :title="title" @click-right="onMy">
+      <div slot="left" v-if="needBack" class="left-content">
+        <van-icon class-prefix="iconfont" name="back" size="30" color="#1989fa" @click.stop="onBack" />
+        <van-icon name="wap-home-o" size="30" style="margin-left: 5px;" @click.stop="onHome" />
+      </div>
+      <div slot="right" :class="['right-content', hasNewMsg ? 'dot' : '']" v-if="needAvatar">
         <img :src="avatar" v-if="avatar">
         <img :src="avatarD" v-else>
       </div>
@@ -26,6 +30,7 @@ export default {
   },
   computed: {
     ...mapGetters('user', ['avatar']),
+    ...mapGetters('notify', ['hasNewMsg']),
   },
   data() {
     return {
@@ -38,6 +43,9 @@ export default {
     },
     onMy() {
       this.$router.push('/user');
+    },
+    onHome() {
+      this.$router.push('/home');
     }
   },
 }
@@ -45,20 +53,42 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-.avatar {
-  position: relative;
-  .px2vw(width, 90);
-  .px2vw(height, 90);
-  overflow: hidden;
+.nav-bar {
+  .left-content {
+    display: flex;
+    align-items: center;
+  }
 
-  img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    z-index: 1;
+  .right-content {
+    position: relative;
+    .px2vw(width, 90);
+    .px2vw(height, 90);
+    overflow: hidden;
+
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      z-index: 1;
+    }
+  }
+  .dot {
+    position: relative;
+
+    &::after {
+      position: absolute;
+      top: 0;
+      right: 0;
+      .px2vw(width, 20);
+      .px2vw(height, 20);
+      content: '';
+      border-radius: 50%;
+      background: @red;
+      z-index: 9;
+    }
   }
 }
 </style>

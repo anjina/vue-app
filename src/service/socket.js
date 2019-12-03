@@ -1,4 +1,6 @@
 import openSocket from 'socket.io-client';
+import store from '../store/index';
+import { Notify } from 'vant';
 
 class Socket {
   constructor(url, data) {
@@ -21,9 +23,18 @@ class Socket {
         this.socket.connect();
       }
     })
-    this.socket.on('newMsg', (data) => {
+    this.socket.on('newMsg', () => {
       // 收到新消息
-      console.log(data)
+      store.commit('notify/setProp', {
+        prop: 'hasNewMsg',
+        value: true
+      });
+      Notify({
+        message: '有新消息喔',
+        color: '#ad0000',
+        background: '#ffe1e1',
+        duration: 1000,
+      });
     })
   }
 

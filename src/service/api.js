@@ -1,7 +1,7 @@
 const apiUrl = {
   register: '/register',
   login: '/login',
-  getLovers: '/lovers',
+  getLovers: '/user',
   updateUser: '/user',
 }
 

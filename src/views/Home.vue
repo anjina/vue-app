@@ -11,7 +11,8 @@ import { Dialog } from 'vant';
 import NavBar from '@/components/NavBar'
 export default {
   computed: {
-    ...mapGetters('user', ['lover']),
+    ...mapGetters('user', ['lover', 'phoneNum']),
+    ...mapGetters('notify', ['hasShowTip']),
   },
   data() {
     return {
@@ -23,7 +24,7 @@ export default {
   },
   mounted() {
     // lover不存在？？ 安排！！
-    if(!this.lover) {
+    if(!this.lover && !this.hasShowTip) {
       Dialog.confirm({
         message: '系统检测到你还是单身狗，\n是否尝试领养一个🙈？',
         transition: 'slide',
@@ -35,6 +36,10 @@ export default {
       }).catch(() => {
         // 
       })
+      this.$store.commit('notify/setProp', {
+        prop: 'hasShowTip',
+        value: true
+      });
     }
   },
   methods: {
