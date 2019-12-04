@@ -4,7 +4,7 @@
     <div class="message_list" v-if="list.length">
       <template v-for="(item, index) in list">
         <div class="message_item" @click.stop="onMegDetail(index)" :key="item.id">
-          <img :src="item.fromInfo.avatar || avatarD" alt="">
+          <img :src="item.fromInfo.avatar ? (IMGPATH + item.fromInfo.avatar) : AVATARD" alt="">
           <div class="van-hairline--bottom right-content">
             <div class="name">{{item.fromInfo.nickName}}</div>
             <div class="content" v-if="item.type === 0">{{item.message}}</div>
@@ -22,9 +22,12 @@
       title="消息卡片"
       show-cancel-button
       :show-confirm-button="currentDetail.type === 1"
-      confirm-button-text="我愿意😘"
+      :confirm-button-text="confirmText"
       cancel-button-text="关闭"
       cancel-button-color="rgb(190, 190, 190)"
+      :confirm-button-color="confirmText === '已接受' ? 'rgb(190, 190, 190)' : '#1989fa'"
+      @confirm="onConfirm"
+      transition="van-slide-up"
     >
       <p v-if="currentDetail.type === 1" class="dialog-content">
         {{currentDetail.fromInfo.nickName}}想和你成为情侣关系，是否愿意？
@@ -37,18 +40,28 @@
 <script>
 import NavBar from '@/components/NavBar'
 import { apiUrl } from '@/service/api'
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
       phoneNum: null,
       list: [],
-      avatarD: require('../assets/avatar.png'),
       showDetail: false,
-      currentDetail: {}
+      currentDetail: {},
+      confirmText: '我愿意🤩',
     }
   },
   components: {
     NavBar,
+  },
+  computed: {
+    ...mapGetters({
+      nickName: 'user/nickName',
+    }),
+    ...mapGetters({
+      IMGPATH: 'constant/IMGPATH',
+      AVATARD: 'constant/AVATARD',
+    })
   },
   mounted() {
     const id = this.$route.query.id;
@@ -60,10 +73,38 @@ export default {
       const { phoneNum } = this;
       const res = await this.$get(apiUrl.getMessage, { phoneNum });
       this.list = res.data;
+      this.isLoading = false;
     },
     onMegDetail(index) {
       this.currentDetail = this.list[index];
+      const { fromInfo: { lover }} = this.currentDetail
+      if(lover) {
+        this.confirmText = '已接受';
+      }
       this.showDetail = true;
+    },
+    async onConfirm() {
+      if(this.confirmText === '已接受') {
+        return;
+      }
+      const { fromId, toId } = this.currentDetai
+      await this.$put(apiUrl.updateUser, { options: { lover: fromId }});
+      await this.$put(apiUrl.updateUser, {
+        user: fromId,
+        options: { lover: toId }
+      });
+      this.$store.commit('user/setProp', {
+        prop: 'lover',
+        value: fromId
+      });
+      window.mySocket.startTalk({
+        fromId: toId,
+        toId: fromId,
+        type: 0,
+        message: `${this.nickName}已答应！恭喜~`
+      });
+      this.confirmText = '已接受';
+      this.$toast('脱单成功🤩！');
     }
   },
 }
@@ -71,16 +112,22 @@ export default {
 
 <style lang="less">
   .message {
+    padding-top: 46px;
     min-height: 100vh;
     box-sizing: border-box;
     background: #fff;
     .message_list {
+      height: 100%;
+      .px2vw(padding-top, 20);
       .message_item {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        .px2vw(padding, 40, 20);
+        .px2vw(padding, 0, 20);
 
+        &:not(:first-child) {
+          .px2vw(padding-top, 20);
+        }
         img {
           .px2vw(width, 90);
           .px2vw(height, 90);

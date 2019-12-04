@@ -15,7 +15,10 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (user.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "user" */ '../views/User.vue')
+    component: () => import(/* webpackChunkName: "user" */ '../views/User.vue'),
+    meta: {
+      keepAlive: true,
+    }
   },
   {
     path: '/home',
@@ -30,7 +33,10 @@ const routes = [
   {
     path: '/detail',
     name: 'detail',
-    component: () => import(/* webpackChunkName: "user" */ '../views/Detail.vue')
+    component: () => import(/* webpackChunkName: "user" */ '../views/Detail.vue'),
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/edit',
@@ -46,7 +52,7 @@ const routes = [
     path: '/label',
     name: 'label',
     component: () => import(/* webpackChunkName: "user" */ '../views/Label.vue')
-  }
+  },
 ]
 
 const router = new VueRouter({

@@ -18,7 +18,7 @@
         </div>
         <van-grid :border="false" :column-num="6" v-else>
           <van-grid-item v-for="item in recommendList" :key="item.id" class="each-lover" @click.stop="onDetail(item)">
-            <van-image :src="item.avatar || loverD" />
+            <van-image :src="item.avatar || LOVERD" />
           </van-grid-item>
         </van-grid>
       </van-collapse-item>
@@ -28,7 +28,7 @@
         </div>
         <van-grid :border="false" :column-num="6" v-else>
           <van-grid-item v-for="item in searchList" :key="item.id" class="each-lover" @click.stop="onDetail(item)">
-            <van-image :src="item.avatar || loverD" />
+            <van-image :src="item.avatar || LOVERD" />
           </van-grid-item>
         </van-grid>
       </van-collapse-item>
@@ -45,7 +45,7 @@
       class="favorite-dialog"
     >
       <div class="favorite-image-wrapper">
-        <img :src="favoriteInfo.avatar || loverD">
+        <img :src="favoriteInfo.avatar || LOVERD">
       </div>
       <van-cell-group style="margin-bottom: 20px;">
         <van-cell title="昵称" :value="favoriteInfo.nickName" />
@@ -72,7 +72,6 @@ export default {
           keyword: null
         }
       },
-      loverD: require('../assets/loverD.png'),
       showDetail: false,
       favoriteInfo: {},
     }
@@ -84,6 +83,9 @@ export default {
     ...mapGetters({
       uid: 'user/phoneNum',
       lover: 'user/lover',
+    }),
+    ...mapGetters({
+      LOVERD: 'constant/LOVERD'
     })
   },
   mounted() {
@@ -141,6 +143,7 @@ export default {
     background: @pink;
     min-height: 100vh;
     box-sizing: border-box;
+    padding-top: 46px;
     .no-data {
       .px2vw(font-size, 30);
     }

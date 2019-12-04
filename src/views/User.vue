@@ -5,8 +5,7 @@
       <div class="user_wrapper">
         <div class="left-content">
           <div class="avatar">
-            <img :src="avatar" v-if="avatar">
-            <img :src="avatarD" v-else>
+            <img :src="avatar ? (IMGPATH + avatar) : AVATARD" />
           </div>
           <div class="info">
             <div class="name">{{nickName}}</div>
@@ -29,6 +28,7 @@
 <script>
 import NavBar from '@/components/NavBar'
 import InfoRow from '@/components/UserInfoRow'
+import { apiUrl } from '@/service/api'
 import { mapGetters } from 'vuex'
 export default {
   components: {
@@ -37,17 +37,22 @@ export default {
   },
   data() {
     return {
-      avatarD: require('../assets/avatar.png'),
     }
   },
   computed: {
-    ...mapGetters('user', ['avatar', 'nickName', 'sign', 'hasNewMsg', 'phoneNum'])
+    ...mapGetters('user', ['avatar', 'nickName', 'sign', 'hasNewMsg', 'phoneNum']),
+    ...mapGetters('constant', ['AVATARD', 'IMGPATH']),
   },
   methods: {
     onDetail() {
       this.$router.push('/detail');
     },
-    onMessage() {
+    async onMessage() {
+      await this.$put(apiUrl.updateUser, { options: { hasNewMsg: 0 } });
+      this.$store.commit('user/setProp', {
+        prop: 'hasNewMsg',
+        value: 0,
+      })
       const { phoneNum } = this;
       this.$router.push({
         path: '/message',
@@ -67,6 +72,7 @@ export default {
   background: #fff;
   min-height: 100vh;
   box-sizing: border-box;
+  padding-top: 46px;
   .user_header {
     .px2vw(padding, 0, 30);
     background: @skyBlue;

@@ -16,7 +16,6 @@ export default {
   },
   data() {
     return {
-      avatarD: require('../assets/avatar.png'),
     }
   },
   components: {
@@ -52,5 +51,8 @@ export default {
 
 <style lang="less">
   .home {
+    height: 100vh;
+    padding-top: 46px;
+    box-sizing: border-box;
   }
 </style>

@@ -233,6 +233,7 @@ export default {
   .edit_user {
     height: 100vh;
     background: @skyBlue;
+    padding-top: 46px;
     box-sizing: border-box;
 
     .edit_user_container {

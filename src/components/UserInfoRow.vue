@@ -53,7 +53,6 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      .px2vw(margin-right, 40);
 
       .content {
         .ellipsisLn(1);
@@ -77,6 +76,7 @@ export default {
     }
 
     .right-content {
+      .px2vw(margin-left, 40);
       .expandClickArea(15);
     }
   }

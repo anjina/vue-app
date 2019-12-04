@@ -4,6 +4,7 @@ const apiUrl = {
   getLovers: '/user',
   updateUser: '/user',
   getMessage: '/message',
+  uploadImg: '/image',
 }
 
 module.exports = {

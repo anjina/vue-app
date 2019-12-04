@@ -1,16 +1,13 @@
 <template>
-  <div class="nav-bar">
-    <van-nav-bar :title="title" @click-right="onMy">
-      <div slot="left" v-if="needBack" class="left-content">
-        <van-icon class-prefix="iconfont" name="back" size="30" color="#1989fa" @click.stop="onBack" />
-        <van-icon name="wap-home-o" size="30" style="margin-left: 5px;" @click.stop="onHome" />
-      </div>
-      <div slot="right" :class="['right-content', hasNewMsg ? 'dot' : '']" v-if="needAvatar">
-        <img :src="avatar" v-if="avatar">
-        <img :src="avatarD" v-else>
-      </div>
-    </van-nav-bar>
-  </div>
+  <van-nav-bar fixed :title="title" @click-right="onMy">
+    <div slot="left" v-if="needBack" class="left-content">
+      <van-icon class-prefix="iconfont" name="back" size="30" color="#1989fa" @click.stop="onBack" />
+      <van-icon name="wap-home-o" size="30" style="margin-left: 5px;" @click.stop="onHome" />
+    </div>
+    <div slot="right" :class="['right-content', hasNewMsg ? 'dot' : '']" v-if="needAvatar">
+      <img :src="avatar ? (IMGPATH + avatar) : AVATARD">
+    </div>
+  </van-nav-bar>
 </template>
 
 <script>
@@ -30,10 +27,10 @@ export default {
   },
   computed: {
     ...mapGetters('user', ['avatar', 'hasNewMsg']),
+    ...mapGetters('constant', ['IMGPATH', 'AVATARD']),
   },
   data() {
     return {
-      avatarD: require('../assets/avatar.png'),
     }
   },
   methods: {
@@ -52,7 +49,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-.nav-bar {
   .left-content {
     display: flex;
     align-items: center;
@@ -89,5 +85,4 @@ export default {
       z-index: 9;
     }
   }
-}
 </style>
