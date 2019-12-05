@@ -2,6 +2,9 @@
   <div class="home">
     <nav-bar title="Home" :needBack="false"></nav-bar>
     <van-icon class-prefix="iconfont" name="love" size="30" />
+    <div class="home_add" @click.stop="onAdd">
+      <van-icon name="plus" size="22" color="#fff" />
+    </div>
   </div>
 </template>
 
@@ -44,15 +47,30 @@ export default {
   methods: {
     onMy() {
       this.$router.push('/user');
+    },
+    onAdd() {
+      this.$router.push('/add');
     }
   },
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .home {
-    height: 100vh;
     padding-top: 46px;
     box-sizing: border-box;
+
+    .home_add {
+      position: fixed;
+      .px2vw(right, 60);
+      .px2vw(bottom, 60);
+      .px2vw(width, 120);
+      .px2vw(height, 120);
+      background: @green;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
   }
 </style>

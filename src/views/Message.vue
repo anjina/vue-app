@@ -113,9 +113,7 @@ export default {
 <style lang="less">
   .message {
     padding-top: 46px;
-    min-height: 100vh;
     box-sizing: border-box;
-    background: #fff;
     .message_list {
       height: 100%;
       .px2vw(padding-top, 20);

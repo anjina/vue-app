@@ -69,8 +69,6 @@ export default {
 
 <style lang="less">
 .user {
-  background: #fff;
-  min-height: 100vh;
   box-sizing: border-box;
   padding-top: 46px;
   .user_header {

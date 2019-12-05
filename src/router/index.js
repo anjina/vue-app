@@ -53,6 +53,11 @@ const routes = [
     name: 'label',
     component: () => import(/* webpackChunkName: "user" */ '../views/Label.vue')
   },
+  {
+    path: '/add',
+    name: 'add',
+    component: () => import(/* webpackChunkName: "user" */ '../views/Add.vue')
+  },
 ]
 
 const router = new VueRouter({

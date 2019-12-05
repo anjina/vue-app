@@ -118,8 +118,6 @@ export default {
 <style lang="less">
   .detail {
     padding-top: 46px;
-    height: 100vh;
-    background: #fff;
     box-sizing: border-box;
     .detail_container {
       position: relative;
