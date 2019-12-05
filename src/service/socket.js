@@ -23,7 +23,13 @@ class Socket {
         this.socket.connect();
       }
     })
-    this.socket.on('newMsg', () => {
+    this.socket.on('newMsg', (data) => {
+      if(data.type === 2) {
+        store.commit('user/setProp', {
+          prop: 'lover',
+          value: data.fromId
+        });
+      }
       // 收到新消息
       store.commit('user/setProp', {
         prop: 'hasNewMsg',

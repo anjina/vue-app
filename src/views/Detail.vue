@@ -10,7 +10,7 @@
       </info-row>
       <info-row prop="昵称" :value="nickName" @edit="onEdit(0)"></info-row>
       <info-row prop="签名" :value="sign" @edit="onEdit(1)"></info-row>
-      <info-row prop="💕💕💕" :value="lover" @edit="onEdit(2)"></info-row>
+      <info-row prop="💕💕💕" :value="lover || '暂无'" @edit="onEdit(2)"></info-row>
       <info-row prop="手机号" :value="phoneNum" @edit="onEdit(3)"></info-row>
       <info-row prop="密码" value="******" @edit="onEdit(4)"></info-row>
     </div>

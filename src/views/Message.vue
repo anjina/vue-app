@@ -7,8 +7,8 @@
           <img :src="item.fromInfo.avatar ? (IMGPATH + item.fromInfo.avatar) : AVATARD" alt="">
           <div class="van-hairline--bottom right-content">
             <div class="name">{{item.fromInfo.nickName}}</div>
-            <div class="content" v-if="item.type === 0">{{item.message}}</div>
             <div class="content" v-if="item.type === 1">{{item.fromInfo.nickName}}想和你...</div>
+            <div class="content" v-else>{{item.message}}</div>
             <div class="time">{{item.createTime | parseTime}}</div>
           </div>
         </div>
@@ -48,7 +48,7 @@ export default {
       list: [],
       showDetail: false,
       currentDetail: {},
-      confirmText: '我愿意🤩',
+      confirmText: '我愿意',
     }
   },
   components: {
@@ -87,7 +87,7 @@ export default {
       if(this.confirmText === '已接受') {
         return;
       }
-      const { fromId, toId } = this.currentDetai
+      const { fromId, toId } = this.currentDetail
       await this.$put(apiUrl.updateUser, { options: { lover: fromId }});
       await this.$put(apiUrl.updateUser, {
         user: fromId,
@@ -100,11 +100,11 @@ export default {
       window.mySocket.startTalk({
         fromId: toId,
         toId: fromId,
-        type: 0,
+        type: 2,
         message: `${this.nickName}已答应！恭喜~`
       });
       this.confirmText = '已接受';
-      this.$toast('脱单成功🤩！');
+      this.$toast('脱单成功！');
     }
   },
 }
