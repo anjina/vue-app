@@ -73,12 +73,14 @@ instance.interceptors.request.use(
   config => {
     // 在请求里取store，防止取不到
     const uid = store.getters['user/phoneNum'];
+    const storeId = store.getters['user/storeId'];
     config.headers = {
       ...config.headers,
       uid: uid || '',
       token: sessionStorage.getItem('token') || '',
+      storeId
     }
-    const { withLoading = true } = config
+    const { withLoading = true } = config;
     if(withLoading) {
       count ++;
       Toast.loading({
@@ -117,9 +119,9 @@ instance.interceptors.response.use(
 )
 
 export default {
-  post (url, data = {}, config = {}) {
+  post (url, data = {}) {
     return new Promise((resolve, reject) => {
-      instance.post(url, data, config)
+      instance.post(url, data)
         .then(res => {
           resolve(res.data);
         })
@@ -129,11 +131,11 @@ export default {
     })
   },
 
-  get (url, data = {}, config = {}) {
+  get (url, data = {}) {
     return new Promise((resolve, reject) => {
       instance.get(url, {
         params: data
-      }, config).then(res => {
+      }).then(res => {
         resolve(res.data);
       }).catch(err => {
         reject(err);
@@ -141,9 +143,9 @@ export default {
     })
   },
 
-  delete (url, data = {}, config = {}) {
+  delete (url, data = {}) {
     return new Promise((resolve, reject) => {
-      instance.delete(url, { data }, config)
+      instance.delete(url, { data })
         .then(res => {
           resolve(res.data);
         })
@@ -152,9 +154,9 @@ export default {
         })
     })
   },
-  put (url, data = {}, config = {}) {
+  put (url, data = {}) {
     return new Promise((resolve, reject) => {
-      instance.put(url, data, config)
+      instance.put(url, data)
         .then(res => {
           resolve(res.data);
         })

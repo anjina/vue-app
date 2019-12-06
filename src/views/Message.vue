@@ -87,15 +87,17 @@ export default {
       if(this.confirmText === '已接受') {
         return;
       }
-      const { fromId, toId } = this.currentDetai
-      await this.$put(apiUrl.updateUser, { options: { lover: fromId }});
+      const { fromId, toId } = this.currentDetail
+      await this.$put(apiUrl.updateUser, { options: { lover: fromId, storeId: `${fromId}_${toId}`}});
       await this.$put(apiUrl.updateUser, {
         user: fromId,
-        options: { lover: toId }
+        options: { lover: toId, storeId: `${fromId}_${toId}` }
       });
-      this.$store.commit('user/setProp', {
-        prop: 'lover',
-        value: fromId
+      this.$store.commit('user/setProps', {
+        props: {
+          lover: fromId,
+          storeId: `${fromId}_${toId}`,
+        }
       });
       window.mySocket.startTalk({
         fromId: toId,

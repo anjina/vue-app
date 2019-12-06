@@ -98,6 +98,7 @@
 
 <script>
 import NavBar from '@/components/NavBar'
+import { apiUrl } from '@/service/api'
 export default {
   components: {
     NavBar,
@@ -112,13 +113,19 @@ export default {
       },
       showDatePicker: false,
       date: '',
-      labels: ['出行', '人情往来', '人情往来', '人情往来'],
+      labels: [],
       showLabel: false,
       labelName: '',
     }
   },
+  mounted() {
+    this.fetchLabel();
+  },
   methods: {
-    fetchLabel() {},
+    async fetchLabel() {
+      const data = await this.$get(apiUrl.label);
+      this.labels = data;
+    },
     onAddLabel() {
       this.showLabel = true;
     },
