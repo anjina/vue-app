@@ -1,5 +1,5 @@
 <template>
-  <div :class="['footer', external]" @click.stop="onClick">{{ content }}</div>
+  <div :class="['footer', 'van-hairline--top', external]" @click.stop="onClick">{{ content }}</div>
 </template>
 
 <script>

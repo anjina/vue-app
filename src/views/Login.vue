@@ -293,7 +293,7 @@ export default {
             phoneNum: loginPhoneNum,
             password: loginPassword,
             imgCaptcha
-          }
+          },
         ).then(res => {
           if(res.data.errno === 1000) {
             this.$toast.fail(res.data.errmsg);

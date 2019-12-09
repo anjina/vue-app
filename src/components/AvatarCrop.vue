@@ -19,7 +19,7 @@
         @realTime="realTime"
       ></vueCropper>
     </div>
-    <div class="show-preview" :style="previewStyle">
+    <div class="show-preview" :style="previewStyle" v-if="needPreview">
       <div :style="previews.div">
         <img :src="previews.url" :style="previews.img">
       </div>
@@ -45,6 +45,10 @@ export default {
     showCrop: {
       type: Boolean,
       default: false,
+    },
+    needPreview: {
+      type: Boolean,
+      default: true,
     }
   },
   data() {

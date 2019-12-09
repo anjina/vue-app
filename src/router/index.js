@@ -58,6 +58,11 @@ const routes = [
     name: 'add',
     component: () => import(/* webpackChunkName: "user" */ '../views/Add.vue')
   },
+  {
+    path: '/map',
+    name: 'map',
+    component: () => import(/* webpackChunkName: "user" */ '../components/Map.vue')
+  },
 ]
 
 const router = new VueRouter({
