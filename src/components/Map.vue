@@ -14,7 +14,9 @@ export default {
   },
   async created() {
     const AMap = await loadMap('3f3789735d7d50290d52d154ded286b6');
-    console.log(AMap);
+    AMap.plugin(['AMap.PlaceSearch', 'AMap.Autocomplete'], () => {
+      
+    })
   },
 }
 </script>
