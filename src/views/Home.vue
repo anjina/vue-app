@@ -12,6 +12,7 @@
 import { mapGetters } from 'vuex'
 import { Dialog } from 'vant';
 import NavBar from '@/components/NavBar'
+import { apiUrl } from '@/service/api'
 export default {
   computed: {
     ...mapGetters('user', ['lover', 'phoneNum']),
@@ -43,8 +44,14 @@ export default {
         value: true
       });
     }
+
+    this.fetchData();
   },
   methods: {
+    async fetchData() {
+      const res = await this.$get(apiUrl.pay);
+      console.log(res);
+    },
     onMy() {
       this.$router.push('/user');
     },

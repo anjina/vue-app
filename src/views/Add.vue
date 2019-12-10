@@ -13,7 +13,7 @@
         />
 
         <van-field
-          v-model="date"
+          v-model="form.date"
           label="日期"
           placeholder="请选择.."
           disabled
@@ -43,6 +43,13 @@
           @click-right-icon="onLocationPick"
         />
       </van-cell-group>
+
+      <van-radio-group v-model="form.type" class="add_radio_group">
+        <div class="radio-type">类型</div>
+        <van-radio :name="0">支出</van-radio>
+        <van-radio :name="1">收入</van-radio>
+      </van-radio-group>
+
       <div class="label-list">
         <div class="header">标签</div>
         <div class="list">
@@ -65,11 +72,12 @@
         <van-uploader :after-read="afterRead" multiple v-model="form.images" />
       </div>
     </div>
-    <bottom-btn content="创建" :external="isReady ? 'bottom-btn-y' : 'bottom-btn-n'"></bottom-btn>
+    <bottom-btn content="创建" @confirm="onCreate" :external="isReady ? 'bottom-btn-y' : 'bottom-btn-n'"></bottom-btn>
     <div class="dater-pick" v-if="showDatePicker">
       <van-datetime-picker
-        v-model="form.currentDate"
-        type="date"
+        v-model="currentDate"
+        type="datetime"
+        :min-date="minDate"
         @confirm="onConfirmDate"
         @cancel="onClose"
       />
@@ -116,6 +124,19 @@ import NavBar from '@/components/NavBar'
 import BottomBtn from '@/components/BottomBtn'
 import Map from '@/components/Map'
 import { apiUrl } from '@/service/api'
+import { loadMap } from '@/utils/loadMap'
+
+const formatData = data => {
+  let { images, labels, money } = data;
+  images = images.map(i => i.content).join('||');
+  labels = labels.map(i => i.name).join(',');
+  return {
+    ...data,
+    images,
+    labels,
+    money: +money,
+  };
+}
 export default {
   components: {
     NavBar,
@@ -125,24 +146,40 @@ export default {
   data() {
     return {
       form: {
-        money: 0,
+        money: '',
         remark: '',
-        currentDate: null,
+        date: null,
         labels: [],
         location: null,
-        images: []
+        images: [],
+        type: 0,
       },
       showDatePicker: false,
-      date: '',
       labels: [],
       showLabel: false,
       labelName: '',
       isReady: false,
       showMap: false,
+      currentDate: null,
+      minDate: new Date(2019, 10, 1),
     }
   },
   mounted() {
+    this.form.date = this.formatTime(new Date());
     this.fetchLabel();
+    this.initLocation();
+  },
+  watch: {
+    form: {
+      handler: function(newV) {
+        if(newV.location && newV.money && newV.labels.length) {
+          this.isReady = true;
+        } else {
+          this.isReady = false;
+        }
+      },
+      deep: true
+    }
   },
   methods: {
     async fetchLabel() {
@@ -200,18 +237,47 @@ export default {
       this.form.location = data;
     },
     onConfirmDate() {
-      const { currentDate } = this.form;
-      this.formatTime(currentDate);
+      const { currentDate } = this;
+      this.form.date = this.formatTime(currentDate);
       this.showDatePicker = false;
     },
     formatTime(date) {
       const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      this.date = `${year}-${month}-${day}`;
+      const month = (date.getMonth() + 1) < 10 ? ('0' + (date.getMonth() + 1)) : date.getMonth() + 1;
+      const day = date.getDate() < 10 ? ('0' + date.getDate()) : date.getDate();
+      const hours = date.getHours() < 10 ? ('0' + date.getHours()) : date.getHours();
+      const minutes = date.getMinutes() < 10 ? ('0' + date.getMinutes()) : date.getMinutes();
+      return `${year}-${month}-${day} ${hours}:${minutes}:00`;
     },
-    afterRead() {
+    async initLocation() {
+      const AMap = await loadMap();
+      const map = new AMap.Map('');
+      map.plugin('AMap.Geolocation', () => {
+        const geolocation = new AMap.Geolocation({
+          enableHighAccuracy: true,//是否使用高精度定位，默认:true
+          timeout: 10000,          //超过10秒后停止定位，默认：无穷大
+        });
+        geolocation.getCurrentPosition((status, res) => {
+          if(status === 'complete') {
+            this.form.location = res.formattedAddress
+          }
+        });
+      });
     },
+    afterRead() {},
+    onCreate() {
+      const form = formatData(this.form);
+      this.$post(apiUrl.pay, {
+        form
+      }).then(res => {
+        if(res.errno === 0) {
+          this.$toast('创建成功');
+          this.$router.push('/home');
+        }
+      }).catch(err => {
+        this.$toast(`创建失败，请重试:${err}`);
+      })
+    }
   }
 }
 </script>
@@ -267,12 +333,27 @@ export default {
           z-index: 1;
         }
       }
+
+      .add_radio_group {
+        display: flex;
+        padding-left: 16px;
+        .px2vw(margin, 20, 0);
+
+        .radio-type {
+          width: 90px;
+        }
+
+        .van-radio:last-child {
+          .px2vw(margin-left, 40);
+        }
+      }
     }
     .dater-pick {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
+      z-index: 9999;
     }
 
     .dialog-content {

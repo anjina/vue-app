@@ -41,7 +41,7 @@ export default {
       message: '获取位置...',
       forbidClick: true
     });
-    const AMap = await loadMap('3f3789735d7d50290d52d154ded286b6');
+    const AMap = await loadMap();
     this.map = new AMap.Map('map', {
       resizeEnable: true,
       zoom: 16,
