@@ -36,7 +36,6 @@
           v-model="form.location"
           rows="1"
           autosize
-          clearable
           label="定位"
           type="textarea"
           placeholder="请输入或选择位置.."
@@ -108,7 +107,7 @@
         <van-icon slot="button" name="plus" color="#07c160" size="20" @click.stop="onCreateLabel" />
       </van-field>
     </van-dialog>
-    <Map v-if="showMap" />
+    <Map v-if="showMap" @close="showMap = false" @confirm="onConfirmLocation" />
   </div>
 </template>
 
@@ -194,7 +193,11 @@ export default {
       this.showDatePicker = false;
     },
     onLocationPick() {
-      this.$router.push('/map');
+      this.showMap = true;
+    },
+    onConfirmLocation(data) {
+      this.showMap = false;
+      this.form.location = data;
     },
     onConfirmDate() {
       const { currentDate } = this.form;
