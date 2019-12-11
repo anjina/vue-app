@@ -53,13 +53,13 @@
       <div class="label-list">
         <div class="header">标签</div>
         <div class="list">
-          <div class="label" v-for="(item, index) in form.labels" :key="item.name">
+          <div class="label" v-for="(item, index) in labels" :key="item.name">
             <van-tag
-              closeable
               type="warning"
               size="large"
               round
-              @close="onDelLabel(index)"
+              :style="{backgroundColor: item.name === form.label ? '#07c160' : '#969799'}"
+              @click.stop="onSelect(index)"
             >{{item.name}}</van-tag>
           </div>
         </div>
@@ -88,32 +88,15 @@
       show-cancel-button
       show-confirm-button
       @cancel="onCancel"
-      @confirm="onConfirmLabel"
+      :before-close="onConfirmLabel"
     >
-      <div class="dialog-content">
-        <div class="dialog_wrapper">请选择标签:</div>
-        <div class="label-group" v-if="labels.length">
-          <div class="label-item" v-for="(item, index) in labels" :key="item.id">
-            <van-tag
-              round
-              size="large"
-              @click="onSelect(index)"
-              :style="{backgroundColor: item.selected ? '#07c160' : '#969799'}"
-            >{{item.name}}</van-tag>
-          </div>
-        </div>
-        <div class="no-data" v-else>暂无数据..</div>
-        <div class="create_wrapper">没有想要的？在下面创建:</div>
-      </div>
       <van-field
         v-model="labelName"
         center
         clearable
         label="标签名称"
         placeholder="请输入.."
-      >
-        <van-icon slot="button" name="plus" color="#07c160" size="20" @click.stop="onCreateLabel" />
-      </van-field>
+      ></van-field>
     </van-dialog>
     <Map v-if="showMap" @close="showMap = false" @confirm="onConfirmLocation" />
   </div>
@@ -127,13 +110,11 @@ import { apiUrl } from '@/service/api'
 import { loadMap } from '@/utils/loadMap'
 
 const formatData = data => {
-  let { images, labels, money } = data;
+  let { images, money } = data;
   images = images.map(i => i.content).join('||');
-  labels = labels.map(i => i.name).join(',');
   return {
     ...data,
     images,
-    labels,
     money: +money,
   };
 }
@@ -149,7 +130,7 @@ export default {
         money: '',
         remark: '',
         date: null,
-        labels: [],
+        label: '',
         location: null,
         images: [],
         type: 0,
@@ -172,7 +153,7 @@ export default {
   watch: {
     form: {
       handler: function(newV) {
-        if(newV.location && newV.money && newV.labels.length) {
+        if(newV.location && newV.money && newV.label) {
           this.isReady = true;
         } else {
           this.isReady = false;
@@ -192,36 +173,33 @@ export default {
     onCancel() {
       this.showLabel = false;
     },
-    onDelLabel(index) {
-      this.form.labels.splice(index, 1);
+    onSelect(index) {
+      const item = this.labels[index];
+      this.form.label = item.name;
     },
-    onCreateLabel() {
+    onConfirmLabel(action, done) {
       const { labelName } = this;
-      if(!labelName) {
-        this.$toast('请输入标签名称~');
+      if(action === 'cancel') {
+        this.labelName = '';
+        done();
         return;
       }
-      const index = this.labels.findIndex(item => item.labelName === labelName);
+      if(!labelName) {
+        this.$toast('请输入标签名称~');
+        done(false);
+        return;
+      }
+      const index = this.labels.findIndex(item => item.name === labelName.trim());
       if(index > -1) {
-        const item = this.labels[index];
-        item.selected = true;
-        this.labelName = '';
+        this.$toast('标签已存在~');
+        done(false);
         return;
       }
       this.labels.push({
-        name: labelName,
-        selected: true
+        name: labelName
       });
       this.labelName = '';
-    },
-    onSelect(index) {
-      const item = this.labels[index];
-      item.selected = !item.selected;
-      this.labels.splice(index, 1, item);
-    },
-    onConfirmLabel() {
-      this.form.labels = this.labels.filter(item => item.selected);
-      this.showLabel = false;
+      done();
     },
     onDatePick() {
       this.showDatePicker = true;
@@ -273,6 +251,10 @@ export default {
         if(res.errno === 0) {
           this.$toast('创建成功');
           this.$router.push('/home');
+          this.$store.commit('pay/setProp', {
+            prop: 'newRecord',
+            value: res.data
+          });
         }
       }).catch(err => {
         this.$toast(`创建失败，请重试:${err}`);

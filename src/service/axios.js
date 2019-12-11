@@ -84,7 +84,7 @@ instance.interceptors.request.use(
     if(config.method === 'get') {
       ({ withLoading = true } = config.params.config);
       delete config.params.config;
-    } else {
+    } else if(['post', 'delete', 'put'].includes(config.method)) {
       ({ withLoading = true } = config.data.config);
       delete config.data.config;
     }

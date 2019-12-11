@@ -23,7 +23,10 @@ const routes = [
   {
     path: '/home',
     name: 'home',
-    component: () => import(/* webpackChunkName: "user" */ '../views/Home.vue')
+    component: () => import(/* webpackChunkName: "user" */ '../views/Home.vue'),
+    meta: {
+      keepAlive: true,
+    }
   },
   {
     path: '/search',

@@ -1,9 +1,19 @@
 <template>
   <div class="home">
-    <nav-bar title="Home" :needBack="false"></nav-bar>
-    <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
-      <div class="home_container"></div>
-    </van-pull-refresh>
+    <nav-bar title="Home" :needBack="false" needRefresh @refresh="onRefresh"></nav-bar>
+    <van-list
+      v-model="loading"
+      :error.sync="error"
+      error-text="请求失败，点击重新加载"
+      :finished="finished"
+      finished-text="没有更多了"
+      :immediate-check="false"
+      @load="loadMore"
+    >
+      <div class="home_container">
+        <pay-list :list="list"></pay-list>
+      </div>
+    </van-list>
     <div class="home_add" @click.stop="onAdd">
       <van-icon name="plus" size="22" color="#fff" />
     </div>
@@ -14,7 +24,17 @@
 import { mapGetters } from 'vuex'
 import { Dialog } from 'vant';
 import NavBar from '@/components/NavBar'
+import PayList from '@/components/PayList'
 import { apiUrl } from '@/service/api'
+
+const formatData = data => {
+  if(data && data.length) {
+    data.forEach(item => {
+      item.imgsUrl = (item.imgsUrl && item.imgsUrl.split(',')) || [];
+    })
+  }
+  return data || [];
+}
 export default {
   computed: {
     ...mapGetters('user', ['lover', 'phoneNum']),
@@ -24,15 +44,20 @@ export default {
     return {
       listQuery: {
         query: {
-
         },
-        type: 0
+        type: 0,
+        page: 1,
+        limit: 10,
       },
-      isLoading: false,
+      list: [],
+      loading: false,
+      error: false,
+      finished: false,
     }
   },
   components: {
-    NavBar
+    NavBar,
+    PayList
   },
   mounted() {
     // lover不存在？？ 安排！！
@@ -53,13 +78,44 @@ export default {
         value: true
       });
     }
-
-    this.fetchData();
+    this.fetchData('load');
+  },
+  activated() {
+    let newRecord = this.$store.getters['pay/newRecord'];
+    if(newRecord) {
+      newRecord = formatData(newRecord);
+      this.list.unshift(newRecord);
+      this.$store.commit('pay/setProp', {
+        prop: 'newRecord',
+        value: null
+      });
+    }
   },
   methods: {
-    async fetchData() {
-      const res = await this.$get(apiUrl.pay, this.listQuery, { withLoading: false });
-      console.log(res);
+    fetchData(operation) {
+      let config = {}
+      if(operation === 'pull') {
+        config.withLoading = false;
+      }
+      this.listQuery.page = operation === 'pull' ? this.listQuery.page + 1 : 1;
+      this.$get(apiUrl.pay, this.listQuery, config)
+        .then(res => {
+          const data = formatData(res.data.data);
+          const count = res.data.count;
+          if(count < this.listQuery.limit) {
+            this.finished = true;
+          }
+          this.list = data;
+          if(operation === 'pull') {
+            this.loading = false;
+          }
+          if(operation === 'unshift' && count === this.list.length) {
+            this.$toast('没有新内容~');
+          }
+        })
+    },
+    loadMore() {
+      this.fetchData('pull')
     },
     onMy() {
       this.$router.push('/user');
@@ -67,9 +123,8 @@ export default {
     onAdd() {
       this.$router.push('/add');
     },
-    async onRefresh() {
-      await this.fetchData();
-      this.isLoading = false;
+    onRefresh() {
+      this.fetchData('unshift');
     }
   },
 }
@@ -81,7 +136,6 @@ export default {
     box-sizing: border-box;
 
     .home_container {
-      min-height: 100vh;
       box-sizing: border-box;
     }
     .home_add {

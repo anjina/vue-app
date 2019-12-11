@@ -1,8 +1,9 @@
 <template>
   <van-nav-bar fixed :title="title" @click-right="onMy">
-    <div slot="left" v-if="needBack" class="left-content">
-      <van-icon class-prefix="iconfont" name="back" size="30" color="#1989fa" @click.stop="onBack" />
-      <van-icon name="wap-home-o" size="30" style="margin-left: 5px;" @click.stop="onHome" />
+    <div slot="left" class="left-content">
+      <van-icon v-if="needBack" class-prefix="iconfont" name="back" size="30" color="#1989fa" @click.stop="onBack" />
+      <van-icon v-if="needBack" name="wap-home-o" size="30" style="margin: 0 5px;" @click.stop="onHome" />
+      <van-icon v-if="needRefresh" name="replay" size="30" color="#1989fa" @click.stop="onRefresh" />
     </div>
     <div slot="right" :class="['right-content', hasNewMsg ? 'dot' : '']" v-if="needAvatar">
       <img :src="avatar ? (IMGPATH + avatar) : AVATARD">
@@ -23,6 +24,10 @@ export default {
     needBack: {
       type: Boolean,
       default: true
+    },
+    needRefresh: {
+      type: Boolean,
+      default: false,
     }
   },
   computed: {
@@ -42,6 +47,9 @@ export default {
     },
     onHome() {
       this.$router.push('/home');
+    },
+    onRefresh() {
+      this.$emit('refresh');
     }
   },
 }
@@ -52,6 +60,7 @@ export default {
   .left-content {
     display: flex;
     align-items: center;
+    height: 46px;
   }
 
   .right-content {
