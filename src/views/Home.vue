@@ -1,7 +1,9 @@
 <template>
   <div class="home">
     <nav-bar title="Home" :needBack="false"></nav-bar>
-    <van-icon class-prefix="iconfont" name="love" size="30" />
+    <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+      <div class="home_container"></div>
+    </van-pull-refresh>
     <div class="home_add" @click.stop="onAdd">
       <van-icon name="plus" size="22" color="#fff" />
     </div>
@@ -20,6 +22,13 @@ export default {
   },
   data() {
     return {
+      listQuery: {
+        query: {
+
+        },
+        type: 0
+      },
+      isLoading: false,
     }
   },
   components: {
@@ -49,7 +58,7 @@ export default {
   },
   methods: {
     async fetchData() {
-      const res = await this.$get(apiUrl.pay);
+      const res = await this.$get(apiUrl.pay, this.listQuery, { withLoading: false });
       console.log(res);
     },
     onMy() {
@@ -57,6 +66,10 @@ export default {
     },
     onAdd() {
       this.$router.push('/add');
+    },
+    async onRefresh() {
+      await this.fetchData();
+      this.isLoading = false;
     }
   },
 }
@@ -67,6 +80,10 @@ export default {
     padding-top: 46px;
     box-sizing: border-box;
 
+    .home_container {
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
     .home_add {
       position: fixed;
       .px2vw(right, 60);

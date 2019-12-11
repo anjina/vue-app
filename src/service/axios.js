@@ -80,7 +80,15 @@ instance.interceptors.request.use(
       token: sessionStorage.getItem('token') || '',
       storeId
     }
-    const { withLoading = true } = config;
+    let withLoading = true;
+    if(config.method === 'get') {
+      ({ withLoading = true } = config.params.config);
+      delete config.params.config;
+    } else {
+      ({ withLoading = true } = config.data.config);
+      delete config.data.config;
+    }
+
     if(withLoading) {
       count ++;
       Toast.loading({
@@ -119,8 +127,9 @@ instance.interceptors.response.use(
 )
 
 export default {
-  post (url, data = {}) {
+  post (url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
+      data.config = config
       instance.post(url, data)
         .then(res => {
           resolve(res.data);
@@ -131,10 +140,11 @@ export default {
     })
   },
 
-  get (url, data = {}) {
+  get (url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
+      data.config = config
       instance.get(url, {
-        params: data
+        params: data,
       }).then(res => {
         resolve(res.data);
       }).catch(err => {
@@ -143,8 +153,9 @@ export default {
     })
   },
 
-  delete (url, data = {}) {
+  delete (url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
+      data.config = config
       instance.delete(url, { data })
         .then(res => {
           resolve(res.data);
@@ -154,8 +165,9 @@ export default {
         })
     })
   },
-  put (url, data = {}) {
+  put (url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
+      data.config = config
       instance.put(url, data)
         .then(res => {
           resolve(res.data);
