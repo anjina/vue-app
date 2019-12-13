@@ -23,7 +23,20 @@ class Socket {
         this.socket.connect();
       }
     })
-    this.socket.on('newMsg', () => {
+    this.socket.on('newMsg', (data) => {
+      if(data.type === 2) {
+        store.commit('notify/setProp', {
+          prop: 'hasNewRecord',
+          value: true
+        });
+        Notify({
+          message: '有新账单喔',
+          color: '#ad0000',
+          background: '#ffe1e1',
+          duration: 1000,
+        });
+        return;
+      }
       // 收到新消息
       store.commit('user/setProp', {
         prop: 'hasNewMsg',

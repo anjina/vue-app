@@ -5,7 +5,7 @@
     </div>
     <div class="header">
       <div class="left-header">
-        <img :src="IMGPATH + item.creatorInfo.avatar" alt="">
+        <img :src="item.creatorInfo.avatar ? IMGPATH + item.creatorInfo.avatar : AVATARD" alt="">
         <div class="info">
           <div class="nick-name">{{item.creatorInfo.nickName}}</div>
           <div class="time">{{item.date}}</div>
@@ -42,12 +42,20 @@
     >
       <template v-slot:index>{{ pIndex }} / {{images.length}}</template>
     </van-image-preview>
+
+    <van-action-sheet
+      v-model="showEdit"
+      :actions="actions"
+      cancel-text="取消"
+      @select="onSelect"
+    />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import FormItem from '@/components/FormItem'
+import { Dialog, Icon, ActionSheet, ImagePreview, Divider } from 'vant'
 export default {
   props: {
     item: {
@@ -59,17 +67,36 @@ export default {
   computed: {
     ...mapGetters({
       IMGPATH: 'constant/IMGPATH',
+      AVATARD: 'constant/AVATARD',
     })
   },
   data() {
     return {
       pIndex: 1,
       showPreview: false,
-      images: []
+      images: [],
+      showEdit: false,
+      actions: [
+        {
+          id: 0,
+          name: '编辑',
+          color: '#87CEEB',
+        },
+        {
+          id: 1,
+          name: '删除',
+          color: 'red',
+        },
+      ]
     }
   },
   components: {
-    FormItem
+    FormItem,
+    [Dialog.name]: Dialog,
+    [Icon.name]: Icon,
+    [ActionSheet.name]: ActionSheet,
+    [ImagePreview.name]: ImagePreview,
+    [Divider.name]: Divider,
   },
   methods: {
     onImgPreview(imgs) {
@@ -80,7 +107,28 @@ export default {
     onChange(index) {
       this.pIndex = index + 1;
     },
-    onMore() {},
+    onMore() {
+      this.showEdit = true;
+    },
+    onSelect(item) {
+      const { id } = item;
+      const { index } = this;
+      if(id === 0) {
+        this.$emit('edit', index);
+        return;
+      }
+      if(id === 1) {
+        Dialog.confirm({
+          title: '',
+          message: '是否确认删除该条记录，删除后将无法找回？',
+          cancelButtonText: '手抖，按错了'
+        }).then(() => {
+          this.$emit('delete', index);
+        }).catch(() => {
+          // on cancel
+        });
+      }
+    }
   },
   filters: {
     filterType(v) {

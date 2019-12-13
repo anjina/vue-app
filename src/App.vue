@@ -10,7 +10,7 @@
 <style lang="less">
   #app {
     box-sizing: border-box;
-    background: #fff;
+    background: @bg;
     min-height: 100vh;
   }
 </style>

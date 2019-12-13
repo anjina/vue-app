@@ -30,10 +30,12 @@ import NavBar from '@/components/NavBar'
 import InfoRow from '@/components/UserInfoRow'
 import { apiUrl } from '@/service/api'
 import { mapGetters } from 'vuex'
+import { Icon } from 'vant'
 export default {
   components: {
     NavBar,
     InfoRow,
+    [Icon.name]: Icon,
   },
   data() {
     return {
@@ -71,6 +73,9 @@ export default {
 .user {
   box-sizing: border-box;
   padding-top: 46px;
+  min-height: 100vh;
+  background: #fff;
+
   .user_header {
     .px2vw(padding, 0, 30);
     background: @skyBlue;

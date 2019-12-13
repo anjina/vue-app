@@ -69,15 +69,16 @@
       </div>
       <div class="image-list">
         <div class="header">图片</div>
-        <van-uploader :after-read="afterRead" multiple v-model="form.images" />
+        <van-uploader :after-read="afterRead" multiple v-model="imgsList" />
       </div>
     </div>
-    <bottom-btn content="创建" @confirm="onCreate" :external="isReady ? 'bottom-btn-y' : 'bottom-btn-n'"></bottom-btn>
+    <bottom-btn :content="id ? '保存' : '创建'" @confirm="onCreate" :external="isReady ? 'bottom-btn-y' : 'bottom-btn-n'"></bottom-btn>
     <div class="dater-pick" v-if="showDatePicker">
       <van-datetime-picker
         v-model="currentDate"
         type="datetime"
         :min-date="minDate"
+        :max-date="maxDate"
         @confirm="onConfirmDate"
         @cancel="onClose"
       />
@@ -108,21 +109,36 @@ import BottomBtn from '@/components/BottomBtn'
 import Map from '@/components/Map'
 import { apiUrl } from '@/service/api'
 import { loadMap } from '@/utils/loadMap'
+import { mapGetters } from 'vuex'
+import { getTimeType } from '@/utils/utils'
+import {
+  Cell,
+  CellGroup,
+  Field,
+  Dialog,
+  DatetimePicker,
+  Radio,
+  RadioGroup,
+  Icon,
+  Uploader,
+  Tag
+} from 'vant'
 
-const formatData = data => {
-  let { images, money } = data;
-  images = images.map(i => i.content).join('||');
-  return {
-    ...data,
-    images,
-    money: +money,
-  };
-}
 export default {
   components: {
     NavBar,
     BottomBtn,
     Map,
+    [Cell.name]: Cell,
+    [CellGroup.name]: CellGroup,
+    [Field.name]: Field,
+    [Dialog.name]: Dialog,
+    [DatetimePicker.name]: DatetimePicker,
+    [Radio.name]: Radio,
+    [RadioGroup.name]: RadioGroup,
+    [Icon.name]: Icon,
+    [Uploader.name]: Uploader,
+    [Tag.name]: Tag,
   },
   data() {
     return {
@@ -143,12 +159,27 @@ export default {
       showMap: false,
       currentDate: null,
       minDate: new Date(2019, 10, 1),
+      maxDate: new Date(),
+      id: 0, // 存在id则为编辑状态
+      imgsList: []
     }
   },
+  computed: {
+    ...mapGetters({
+      uid: 'user/phoneNum',
+      toId: 'user/lover',
+    })
+  },
   mounted() {
-    this.form.date = this.formatTime(new Date());
+    const { id } = this.$route.query;
+    if(!id) {
+      this.form.date = this.formatTime(new Date());
+      this.initLocation();
+    } else {
+      this.id = id;
+      this.initData();
+    }
     this.fetchLabel();
-    this.initLocation();
   },
   watch: {
     form: {
@@ -164,8 +195,21 @@ export default {
   },
   methods: {
     async fetchLabel() {
-      const res = await this.$get(apiUrl.label);
+      const res = await this.$get(apiUrl.label, {}, { withLoading: false });
       this.labels = res.data;
+    },
+    initData() {
+      const { data } = this.$store.getters['pay/editedRecord'];
+      const form = {
+        money: data.money,
+        remark: data.remark,
+        date: data.date,
+        label: data.label,
+        location: data.location,
+        images: data.imgsUrl,
+        type: data.type,
+      }
+      this.form = Object.assign({}, this.form, form);
     },
     onAddLabel() {
       this.showLabel = true;
@@ -242,23 +286,61 @@ export default {
         });
       });
     },
-    afterRead() {},
+    formatData(data) {
+      let { images, money } = data;
+      if(images.length) {
+        images = images.map(i => i.content).join('||');
+      } else {
+        images = '';
+      }
+      return {
+        ...data,
+        images,
+        money: +money,
+      };
+    },
+    afterRead(file) {
+      console.log(file)
+    },
     onCreate() {
-      const form = formatData(this.form);
-      this.$post(apiUrl.pay, {
-        form
-      }).then(res => {
-        if(res.errno === 0) {
-          this.$toast('创建成功');
-          this.$router.push('/home');
-          this.$store.commit('pay/setProp', {
-            prop: 'newRecord',
-            value: res.data
-          });
-        }
-      }).catch(err => {
-        this.$toast(`创建失败，请重试:${err}`);
-      })
+      const form = this.formatData(this.form);
+      const { id } = this;
+      const type = getTimeType(form.date);
+      if(id) {
+        this.id = 0;
+        this.$put(apiUrl.pay, { form, id })
+          .then(res => {
+            if(res.errno === 0) {
+              this.$toast('修改成功~');
+            }
+            this.$store.commit('pay/setProp', {
+              prop: 'editedRecord',
+              value: {
+                data: res.data,
+                type,
+              }
+            });
+            this.$router.back();
+          })
+      } else {
+        this.$post(apiUrl.pay, {
+          form
+        }).then(res => {
+          if(res.errno === 0) {
+            this.$toast('创建成功~');
+            this.$router.push('/home');
+            this.$store.commit('pay/setProp', {
+              prop: 'newRecord',
+              value: {
+                data: res.data,
+                type,
+              }
+            });
+          }
+        }).catch(err => {
+          this.$toast(`创建失败，请重试:${err}`);
+        })
+      }
     }
   }
 }
@@ -268,6 +350,8 @@ export default {
   .add_pay {
     padding-top: 46px;
     box-sizing: border-box;
+    min-height: 100vh;
+    background: #fff;
 
     .add_container {
       // px做单位是为了做到和vant-ui一致

@@ -27,8 +27,13 @@
 
 <script>
 import { loadMap } from '@/utils/loadMap'
-import { Toast } from 'vant';
+import { Toast, Field, Icon } from 'vant';
 export default {
+  components: {
+    [Toast.name]: Toast,
+    [Field.name]: Field,
+    [Icon.name]: Icon,
+  },
   data() {
     return {
       value: '',

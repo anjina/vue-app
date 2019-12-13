@@ -29,5 +29,7 @@ export default {
     text-align: center;
     color: #fff;
     background: rgb(105, 105, 105);
+    padding-bottom: constant(safe-area-inset-bottom); /* 兼容 iOS < 11.2 */
+    padding-bottom: env(safe-area-inset-bottom); /* 兼容 iOS >= 11.2 */
   }
 </style>
