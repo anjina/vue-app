@@ -238,7 +238,7 @@ export default {
           this.$toast.fail('手机号已注册');
           return;
         }
-        if(res.status === 0) {
+        if(res.errno === 0) {
           const { token } = res.data
           sessionStorage.setItem('token', token);
           this.$store.commit('user/setProps', {

@@ -55,7 +55,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import FormItem from '@/components/FormItem'
-import { Dialog, Icon, ActionSheet, ImagePreview, Divider } from 'vant'
+import { Dialog, Icon, ActionSheet, Divider } from 'vant'
 export default {
   props: {
     item: {
@@ -95,7 +95,6 @@ export default {
     [Dialog.name]: Dialog,
     [Icon.name]: Icon,
     [ActionSheet.name]: ActionSheet,
-    [ImagePreview.name]: ImagePreview,
     [Divider.name]: Divider,
   },
   methods: {

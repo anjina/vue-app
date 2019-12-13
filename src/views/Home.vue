@@ -27,6 +27,7 @@ import { mapGetters } from 'vuex'
 import {
   Dialog,
   Icon,
+  List
 } from 'vant';
 import NavBar from '@/components/NavBar'
 import PayList from '@/components/PayList'
@@ -107,6 +108,7 @@ export default {
     Tabs,
     [Dialog.name]: Dialog,
     [Icon.name]: Icon,
+    [List.name]: List,
   },
   mounted() {
     // lover不存在？？ 安排！！

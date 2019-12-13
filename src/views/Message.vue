@@ -41,7 +41,7 @@
 import NavBar from '@/components/NavBar'
 import { apiUrl } from '@/service/api'
 import { mapGetters } from 'vuex'
-import { Divider, Dialog } from ''
+import { Divider, Dialog } from 'vant'
 export default {
   data() {
     return {
@@ -54,7 +54,7 @@ export default {
   },
   components: {
     NavBar,
-    [Dialog.name]: Dialog,
+    [Dialog.Component.name]: Dialog.Component,
     [Divider.name]: Divider,
   },
   computed: {

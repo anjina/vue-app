@@ -3,6 +3,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import http from './service/axios'
+import { ImagePreview } from 'vant'
+
+Vue.use(ImagePreview);
 
 Vue.prototype.$post = http.post
 Vue.prototype.$get = http.get

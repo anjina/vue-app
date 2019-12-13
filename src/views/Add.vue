@@ -132,7 +132,7 @@ export default {
     [Cell.name]: Cell,
     [CellGroup.name]: CellGroup,
     [Field.name]: Field,
-    [Dialog.name]: Dialog,
+    [Dialog.Component.name]: Dialog.Component,
     [DatetimePicker.name]: DatetimePicker,
     [Radio.name]: Radio,
     [RadioGroup.name]: RadioGroup,

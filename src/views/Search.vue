@@ -92,7 +92,7 @@ export default {
     [Search.name]: Search,
     [Cell.name]: Cell,
     [CellGroup.name]: CellGroup,
-    [Dialog.name]: Dialog,
+    [Dialog.Component.name]: Dialog.Component,
     [Collapse.name]: Collapse,
     [CollapseItem.name]: CollapseItem,
     [Grid.name]: Grid,
