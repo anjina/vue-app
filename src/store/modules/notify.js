@@ -1,11 +1,13 @@
 const state = {
   hasNewMsg: false,
-  hasShowTip: false
+  hasShowTip: false,
+  hasNewRecord: false,
 }
 
 const getters = {
   hasShowTip: state => state.hasShowTip,
   hasNewMsg: state => state.hasNewMsg,
+  hasNewRecord: state => state.hasNewRecord,
 }
 
 const actions = {

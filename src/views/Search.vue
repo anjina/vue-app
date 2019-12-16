@@ -60,6 +60,17 @@
 import { apiUrl } from '@/service/api'
 import NavBar from '@/components/NavBar'
 import { mapGetters } from 'vuex'
+import {
+  Search,
+  Cell,
+  CellGroup,
+  Dialog,
+  Collapse,
+  CollapseItem,
+  Grid,
+  GridItem,
+  Image,
+} from 'vant'
 export default {
   data() {
     return {
@@ -77,7 +88,16 @@ export default {
     }
   },
   components: {
-    NavBar
+    NavBar,
+    [Search.name]: Search,
+    [Cell.name]: Cell,
+    [CellGroup.name]: CellGroup,
+    [Dialog.Component.name]: Dialog.Component,
+    [Collapse.name]: Collapse,
+    [CollapseItem.name]: CollapseItem,
+    [Grid.name]: Grid,
+    [GridItem.name]: GridItem,
+    [Image.name]: Image,
   },
   computed: {
     ...mapGetters({
@@ -94,7 +114,7 @@ export default {
   methods: {
     async fetchData(type) {
       const res = await this.$get(apiUrl.getLovers, this.listQuery);
-      res.data = res.data.filter(item => item.phoneNum !== this.uid)
+      res.data = res.data.filter(item => item.phoneNum !== this.uid && item.phoneNum !== this.lover);
       if(type) {
         this.searchList = res.data;
         this.activeNames = '2';

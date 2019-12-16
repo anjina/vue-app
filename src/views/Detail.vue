@@ -33,7 +33,8 @@ export default {
     NavBar,
     InfoRow,
     BottomBtn,
-    AvatarCrop
+    AvatarCrop,
+    [Toast.name]: Toast,
   },
   computed: {
     ...mapGetters({
@@ -119,6 +120,8 @@ export default {
   .detail {
     padding-top: 46px;
     box-sizing: border-box;
+    min-height: 100vh;
+    background: #fff;
     .detail_container {
       position: relative;
       .avatar-input {

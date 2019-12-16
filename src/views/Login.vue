@@ -103,12 +103,33 @@
 </template>
 
 <script>
-import { Dialog, Toast } from 'vant'
+import { 
+  Dialog,
+  Toast,
+  Icon,
+  Tab,
+  Tabs,
+  Cell,
+  CellGroup,
+  Button,
+  Field
+} from 'vant'
 import { apiUrl } from '@/service/api'
 import { initSocket } from '@/service/socket'
 // @ is an alias to /src
 export default {
   name: 'login',
+  components: {
+    [Dialog.name]: Dialog,
+    [Toast.name]: Toast,
+    [Icon.name]: Icon,
+    [Tab.name]: Tab,
+    [Tabs.name]: Tabs,
+    [Cell.name]: Cell,
+    [CellGroup.name]: CellGroup,
+    [Button.name]: Button,
+    [Field.name]: Field,
+  },
   data() {
     return {
       coverImg: require('../assets/back.jpg'),
@@ -217,7 +238,7 @@ export default {
           this.$toast.fail('手机号已注册');
           return;
         }
-        if(res.status === 0) {
+        if(res.errno === 0) {
           const { token } = res.data
           sessionStorage.setItem('token', token);
           this.$store.commit('user/setProps', {

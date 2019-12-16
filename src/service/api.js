@@ -6,6 +6,7 @@ const apiUrl = {
   getMessage: '/message',
   uploadImg: '/image',
   label: '/label',
+  pay: '/pay',
 }
 
 module.exports = {

@@ -15,7 +15,12 @@
 </template>
 
 <script>
+import { Icon, Divider } from 'vant'
 export default {
+  components: {
+    [Icon.name]: Icon,
+    [Divider.name]: Divider,
+  },
   props: {
     prop: {
       type: String,

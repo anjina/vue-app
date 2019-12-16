@@ -41,6 +41,7 @@
 import NavBar from '@/components/NavBar'
 import { apiUrl } from '@/service/api'
 import { mapGetters } from 'vuex'
+import { Divider, Dialog } from 'vant'
 export default {
   data() {
     return {
@@ -53,6 +54,8 @@ export default {
   },
   components: {
     NavBar,
+    [Dialog.Component.name]: Dialog.Component,
+    [Divider.name]: Divider,
   },
   computed: {
     ...mapGetters({
@@ -116,6 +119,8 @@ export default {
   .message {
     padding-top: 46px;
     box-sizing: border-box;
+    min-height: 100vh;
+    background: #fff;
     .message_list {
       height: 100%;
       .px2vw(padding-top, 20);

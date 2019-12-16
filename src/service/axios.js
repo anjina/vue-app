@@ -58,11 +58,10 @@ const errorHandle = (status, other) => {
   }
 }
 
-let count = 0 // 请求数量
+let count = 0; // 请求数量
+let withLoading = true
 
-function hideLoading(request) {
-  const { withLoading = true } = request
-
+function hideLoading() {
   if(!withLoading || --count) {
     return;
   }
@@ -80,7 +79,15 @@ instance.interceptors.request.use(
       token: sessionStorage.getItem('token') || '',
       storeId
     }
-    const { withLoading = true } = config;
+
+    if(config.method === 'get') {
+      ({ withLoading = true } = config.params.config);
+      delete config.params.config;
+    } else if(['post', 'delete', 'put'].includes(config.method)) {
+      ({ withLoading = true } = config.data.config);
+      delete config.data.config;
+    }
+
     if(withLoading) {
       count ++;
       Toast.loading({
@@ -93,18 +100,18 @@ instance.interceptors.request.use(
     return config;
   },
   error => {
-    hideLoading({ withLoading: true });
+    Toast.clear();
     Promise.error(error);
   }
 )
 
 instance.interceptors.response.use(
   res => {
-    hideLoading(res.config);
+    hideLoading();
     return res;
   },
   error => {
-    hideLoading({ withLoading: true });
+    Toast.clear();
     const { response } = error;
     if(response) {
       // 请求已发出，但是不在2xx的范围
@@ -119,8 +126,9 @@ instance.interceptors.response.use(
 )
 
 export default {
-  post (url, data = {}) {
+  post (url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
+      data.config = config
       instance.post(url, data)
         .then(res => {
           resolve(res.data);
@@ -131,10 +139,11 @@ export default {
     })
   },
 
-  get (url, data = {}) {
+  get (url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
+      data.config = config
       instance.get(url, {
-        params: data
+        params: data,
       }).then(res => {
         resolve(res.data);
       }).catch(err => {
@@ -143,8 +152,9 @@ export default {
     })
   },
 
-  delete (url, data = {}) {
+  delete (url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
+      data.config = config
       instance.delete(url, { data })
         .then(res => {
           resolve(res.data);
@@ -154,8 +164,9 @@ export default {
         })
     })
   },
-  put (url, data = {}) {
+  put (url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
+      data.config = config
       instance.put(url, data)
         .then(res => {
           resolve(res.data);

@@ -74,13 +74,17 @@
 <script>
 import NavBar from '@/components/NavBar'
 import BottomBtn from '@/components/BottomBtn'
-import { Toast } from 'vant'
+import { Toast, Cell, CellGroup, Field } from 'vant'
 import { mapGetters } from 'vuex'
 import { apiUrl } from '@/service/api'
 export default {
   components: {
     NavBar,
     BottomBtn,
+    [Toast.name]: Toast,
+    [Cell.name]: Cell,
+    [CellGroup.name]: CellGroup,
+    [Field.name]: Field,
   },
   mounted() {
     const type = this.$route.query.type;
