@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <nav-bar title="Home" :needBack="false" needRefresh @refresh="onRefresh"></nav-bar>
+    <nav-bar title="Home" :needBack="false"></nav-bar>
     <Tabs @click="onTabChange" @search="onSearch" :current="current" :tabs="tabs" />
     <better-scroll
       :data="lists[current].list"
@@ -15,6 +15,7 @@
           :list="lists[current].list"
           :isLoading="lists[current].loading"
           :hasMore="lists[current].hasMore"
+          :operation="operation"
           @edit="onEdit"
           @delete="onDelete"
         ></pay-list>
@@ -101,6 +102,7 @@ export default {
       ],
       tabs: ['今天', '本月', '上个月', '全部'],
       current: 0,
+      operation: 'pull',
     }
   },
   components: {
@@ -135,7 +137,6 @@ export default {
   activated() {
     let newRecord = this.$store.getters['pay/newRecord'];
     let editedRecord = this.$store.getters['pay/editedRecord'];
-
     const { current, tabs } = this;
     if(newRecord) {
       const { data, type } = newRecord;
@@ -175,24 +176,19 @@ export default {
   methods: {
     fetchData(operation) {
       const { current } = this;
-      let config = {};
+      this.operation = operation;
 
       const { listQuery } = this.lists[current];
       const { page } = listQuery;
       this.lists[current].listQuery.page = operation === 'pull' ? page + 1 : 1;
 
-      if(operation === 'pull' && page !== 0) {
-        config.withLoading = false;
-        this.lists[current].loading = true;
-      }
+      this.lists[current].loading = true;
 
-      this.$get(apiUrl.pay, this.lists[current].listQuery, config)
+      this.$get(apiUrl.pay, this.lists[current].listQuery, { withLoading: false })
         .then(res => {
           let { data, currentPage, totalPages } = res.data;
 
-          if(operation === 'pull') {
-            this.lists[current].loading = false;
-          }
+          this.lists[current].loading = false;
 
           if(currentPage === totalPages || data.length < 1) {
             this.lists[current].hasMore = false;
@@ -216,7 +212,12 @@ export default {
             }
             this.$refs.BScroll.finishPullDown();
           } else if(operation === 'pull') {
-            this.lists[current].list = [...this.lists[current].list, ...data];
+            let newData = data;
+            if(this.lists[current].listQuery.page === 1) {
+              const { list } = this.lists[current];
+              newData = data.filter(item => list.every(i => i.id !== item.id));
+            }
+            this.lists[current].list = [...this.lists[current].list, ...newData];
             this.$refs.BScroll.finishPullUp();
           } else {
             this.lists[current].list.push(...data);
@@ -250,7 +251,7 @@ export default {
       const { current } = this;
       const item = this.lists[current].list[index];
       this.$store.commit('pay/setProp', {
-        prop: 'editedRecord',
+        prop: 'editingRecord',
         value: {
           data: item,
         }
@@ -286,6 +287,7 @@ export default {
       align-items: center;
       justify-content: center;
       border-radius: 50%;
+      z-index: 99;
     }
   }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="form-item">
     <div class="form-label">{{label}}：</div>
-    <div class="form-value">{{value}}</div>
+    <div class="form-value">{{value ? value : '-'}}</div>
   </div>
 </template>
 

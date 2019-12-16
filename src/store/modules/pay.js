@@ -1,11 +1,13 @@
 const state = {
   newRecord: null,
   editedRecord: null,
+  editingRecord: null,
 }
 
 const getters = {
   newRecord: state => state.newRecord,
   editedRecord: state => state.editedRecord,
+  editingRecord: state => state.editingRecord,
 }
 
 const actions = {

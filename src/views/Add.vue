@@ -199,7 +199,7 @@ export default {
       this.labels = res.data;
     },
     initData() {
-      const { data } = this.$store.getters['pay/editedRecord'];
+      const { data } = this.$store.getters['pay/editingRecord'];
       const form = {
         money: data.money,
         remark: data.remark,
@@ -303,6 +303,7 @@ export default {
       console.log(file)
     },
     onCreate() {
+      if(!this.isReady) return;
       const form = this.formatData(this.form);
       const { id } = this;
       const type = getTimeType(form.date);

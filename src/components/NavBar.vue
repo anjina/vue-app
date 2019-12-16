@@ -3,7 +3,6 @@
     <div slot="left" class="left-content">
       <van-icon v-if="needBack" class-prefix="iconfont" name="back" size="30" color="#1989fa" @click.stop="onBack" />
       <van-icon v-if="needBack" name="wap-home-o" size="30" style="margin: 0 5px;" @click.stop="onHome" />
-      <van-icon v-if="needRefresh" name="replay" size="30" :dot="hasNewRecord ? true : false" color="#1989fa" @click.stop="onRefresh" />
     </div>
     <div slot="right" :class="['right-content', hasNewMsg ? 'dot' : '']" v-if="needAvatar">
       <img :src="avatar ? (IMGPATH + avatar) : AVATARD">
@@ -30,15 +29,10 @@ export default {
       type: Boolean,
       default: true
     },
-    needRefresh: {
-      type: Boolean,
-      default: false,
-    }
   },
   computed: {
     ...mapGetters('user', ['avatar', 'hasNewMsg']),
     ...mapGetters('constant', ['IMGPATH', 'AVATARD']),
-    ...mapGetters('notify', ['hasNewRecord']),
   },
   data() {
     return {
@@ -46,6 +40,7 @@ export default {
   },
   methods: {
     onBack() {
+      this.$emit('back');
       this.$router.back();
     },
     onMy() {
@@ -54,9 +49,6 @@ export default {
     onHome() {
       this.$router.push('/home');
     },
-    onRefresh() {
-      this.$emit('refresh');
-    }
   },
 }
 </script>

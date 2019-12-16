@@ -1,5 +1,12 @@
 <template>
   <div id="pay-list">
+    <div v-if="isLoading && operation !== 'pull'" class="load-new-wrapper">
+      <van-loading
+        size="20px"
+        type="spinner"
+        color="#1989fa"
+      >正在加载..</van-loading>
+    </div>
     <div v-if="list.length" class="pay-list">
       <template v-for="(item, index) in list">
         <div class="pay-list-container" :key="item.id">
@@ -10,10 +17,10 @@
 
     <div v-if="list.length && isLoading" class="load-wrapper">
       <van-loading
-        size="24px"
+        size="20px"
         type="spinner"
         color="#1989fa"
-      >加载中...</van-loading>
+      >正在加载..</van-loading>
     </div>
     <van-divider
       :style="{ color: 'rgb(105, 105, 105)', borderColor: 'rgb(105, 105, 105)', padding: '30px 64px' }"
@@ -48,6 +55,10 @@ export default {
     hasMore: {
       type: Boolean,
       default: true,
+    },
+    operation: {
+      type: String,
+      required: true,
     }
   },
   components: {
@@ -68,6 +79,12 @@ export default {
 
 <style lang="less" scoped>
   #pay-list {
+    .load-new-wrapper {
+      .px2vw(padding-top, 40);
+      .px2vw(padding-bottom, 10);
+      text-align: center;
+    }
+
     .pay-list {
       background: @bg;
       .px2vw(padding, 30, 20, 0, 20);
