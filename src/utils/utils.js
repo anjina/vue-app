@@ -11,9 +11,22 @@ export function getTimeType(t) {
 
   const lmonth = nmonth - month;
 
-  if(year < nyear || lmonth > 2) {
+  if(year + 1 < nyear || lmonth > 2) {
     return 3;
   }
+
+  if(year + 1 === nyear && lmonth === -11) {
+    if(nday < 16 && day > 15) return 1;
+    if(nday < 16 && day > 16) return 2;
+    if(nday > 15 && day > 15) return 2;
+    return 3;
+  }
+
+  if(year + 1 === nyear && lmonth === -10) {
+    if(nday < 16 && day > 15) return 2;
+    return 3;
+  }
+
   if(lmonth === 2) {
     if(nday < 16 && day > 15) return 2;
     return 3;
@@ -31,4 +44,6 @@ export function getTimeType(t) {
     if(day === nday) return 0;
     return 1;
   }
+
+  return 3;
 }
