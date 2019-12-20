@@ -34,28 +34,13 @@
         <van-icon name="ellipsis" size="24" />
       </div>
     </div>
-
-    <van-image-preview
-      v-model="showPreview"
-      :images="images"
-      @change="onChange"
-    >
-      <template v-slot:index>{{ pIndex }} / {{images.length}}</template>
-    </van-image-preview>
-
-    <van-action-sheet
-      v-model="showEdit"
-      :actions="actions"
-      cancel-text="取消"
-      @select="onSelect"
-    />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import FormItem from '@/components/FormItem'
-import { Dialog, Icon, ActionSheet, Divider } from 'vant'
+import { Dialog, Icon, Divider } from 'vant'
 export default {
   props: {
     item: {
@@ -72,69 +57,35 @@ export default {
   },
   data() {
     return {
-      pIndex: 1,
-      showPreview: false,
-      images: [],
-      showEdit: false,
-      actions: [
-        {
-          id: 0,
-          name: '编辑',
-          color: '#87CEEB',
-        },
-        {
-          id: 1,
-          name: '删除',
-          color: 'red',
-        },
-      ]
     }
   },
   components: {
     FormItem,
     [Dialog.name]: Dialog,
     [Icon.name]: Icon,
-    [ActionSheet.name]: ActionSheet,
     [Divider.name]: Divider,
   },
   methods: {
     onImgPreview(imgs) {
       const { IMGPATH } = this;
-      this.images = imgs.map(img => IMGPATH + img);
-      this.showPreview = true;
-    },
-    onChange(index) {
-      this.pIndex = index + 1;
+      const images = imgs.map(img => IMGPATH + img);
+      this.$router.push({
+        name: 'images',
+        params: {
+          images,
+        }
+      });
     },
     onMore() {
-      this.showEdit = true;
+      this.$emit('showEdit', this.index)
     },
-    onSelect(item) {
-      const { id } = item;
-      const { index } = this;
-      if(id === 0) {
-        this.$emit('edit', index);
-        return;
-      }
-      if(id === 1) {
-        Dialog.confirm({
-          title: '',
-          message: '是否确认删除该条记录，删除后将无法找回？',
-          cancelButtonText: '手抖，按错了'
-        }).then(() => {
-          this.$emit('delete', index);
-        }).catch(() => {
-          // on cancel
-        });
-      }
-    }
   },
   filters: {
     filterType(v) {
       if(v === 0) {
-        return '付款成功';
+        return '支出';
       } else if(v === 1) {
-        return '收入到账';
+        return '收入';
       }
     },
     filterMoney(v) {

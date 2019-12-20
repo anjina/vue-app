@@ -10,7 +10,11 @@
     <div v-if="list.length" class="pay-list">
       <template v-for="(item, index) in list">
         <div class="pay-list-container" :key="item.id">
-          <pay-item :item="item" :index="index" @edit="onEdit" @delete="onDelete"></pay-item>
+          <pay-item
+            :item="item"
+            :index="index"
+            @showEdit="showEdit"
+          ></pay-item>
         </div>
       </template>
     </div>
@@ -67,11 +71,8 @@ export default {
     [Loading.name]: Loading,
   },
   methods: {
-    onEdit(index) {
-      this.$emit('edit', index);
-    },
-    onDelete(index) {
-      this.$emit('delete', index);
+    showEdit(index) {
+      this.$emit('showEdit', index);
     }
   },
 }

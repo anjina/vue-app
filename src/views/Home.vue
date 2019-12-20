@@ -18,12 +18,20 @@
           :operation="operation"
           @edit="onEdit"
           @delete="onDelete"
+          @showEdit="showAction"
         ></pay-list>
       </div>
     </better-scroll>
     <div class="home_add" @click.stop="onAdd">
       <van-icon name="plus" size="22" color="#fff" />
     </div>
+
+    <action-sheet
+      :showEdit.sync="showEdit"
+      :actions="actions"
+      cancelText="取消"
+      @select="onSelect"
+    />
   </div>
 </template>
 
@@ -36,6 +44,7 @@ import {
 import NavBar from '@/components/NavBar'
 import PayList from '@/components/PayList'
 import BetterScroll from '@/components/BetterScroll'
+import ActionSheet from '@/components/ActionSheet'
 import Tabs from '@/components/Tabs'
 import { apiUrl } from '@/service/api'
 
@@ -103,6 +112,20 @@ export default {
       tabs: ['今天', '本月', '上个月', '全部'],
       current: 0,
       operation: 'pull',
+      showEdit: false,
+      actions: [
+        {
+          id: 0,
+          name: '编辑',
+          color: '#87CEEB',
+        },
+        {
+          id: 1,
+          name: '删除',
+          color: 'red',
+        },
+      ],
+      editIndex: 0, // 正在被编辑的index
     }
   },
   components: {
@@ -110,6 +133,7 @@ export default {
     PayList,
     Tabs,
     BetterScroll,
+    ActionSheet,
     [Dialog.name]: Dialog,
     [Icon.name]: Icon,
   },
@@ -243,12 +267,16 @@ export default {
         this.fetchData('load');
       }
     },
+    showAction(index) {
+      this.showEdit = true;
+      this.editIndex = index;
+    },
     onSearch() {},
     onDelete() {
       // const item = this.list[index];
     },
-    onEdit(index) {
-      const { current } = this;
+    onEdit() {
+      const { current, editIndex: index } = this;
       const item = this.lists[current].list[index];
       this.$store.commit('pay/setProp', {
         prop: 'editingRecord',
@@ -262,6 +290,26 @@ export default {
           id: item.id,
         }
       });
+    },
+    onSelect(item) {
+      const { id } = item;
+      if(id === 0) {
+        this.onEdit();
+        this.showEdit = false;
+        return;
+      }
+      if(id === 1) {
+        Dialog.confirm({
+          title: '',
+          message: '是否确认删除该条记录，删除后将无法找回？',
+          cancelButtonText: '手抖，按错了'
+        }).then(() => {
+          this.onDelete();
+          this.showEdit = false;
+        }).catch(() => {
+          // on cancel
+        });
+      }
     },
   },
 }

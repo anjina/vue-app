@@ -157,7 +157,7 @@ export default {
       labelName: '',
       isReady: false,
       showMap: false,
-      currentDate: null,
+      currentDate: new Date(),
       minDate: new Date(2019, 10, 1),
       maxDate: new Date(),
       id: 0, // 存在id则为编辑状态
